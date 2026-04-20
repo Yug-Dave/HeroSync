@@ -1,0 +1,158 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  me: UserSummary
+  profile: Profile
+
+  achievements: [Achievement!]!
+  unlockedAchievements: [UnlockedAchievement!]!
+
+  weeklyReport(date: String!): Report!
+  monthlyReport(year: Int!, month: Int!): Report!
+
+  habits: [Habit!]!
+  habitById(id: ID!): Habit
+  habitsCompletedToday: [ID!]!
+
+  goals: [Goal!]!
+  goalById(id: ID!): Goal
+}
+
+type Mutation {
+  login(input: LoginInput!): AuthResponse
+  register(input: RegisterInput!): AuthResponse
+  updateProfile(input: UpdateProfileInput!): Profile
+
+  evaluateAchievements: [UnlockedAchievement!]!
+
+  createHabit(input: CreateHabitInput!): Habit!
+  updateHabit(id: ID!, input: UpdateHabitInput!): Habit!
+  deleteHabit(id: ID!): Boolean!
+
+  createGoal(input: CreateGoalInput!): Goal!
+  updateGoal(id: ID!, input: UpdateGoalInput!): Goal!
+  deleteGoal(id: ID!): Boolean!
+  completeSoloGoal(id: ID!): Goal!
+}
+
+type UserSummary {
+  id: ID!
+  name: String
+  email: String!
+}
+
+type Profile {
+  displayName: String
+  bio: String
+  city: String
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input RegisterInput {
+  email: String!
+  password: String!
+}
+
+input UpdateProfileInput {
+  displayName: String
+  bio: String
+  city: String
+}
+
+type AuthResponse {
+  userId: ID!
+  name: String
+  email: String!
+}
+
+type Achievement {
+  id: ID!
+  code: String!
+  title: String!
+  description: String!
+  ruleType: String!
+  threshold: Int!
+}
+
+type UnlockedAchievement {
+  id: ID!
+  unlockedAt: String!
+  achievement: Achievement!
+}
+
+type DailyCompletion {
+  date: String!
+  completions: Int!
+}
+
+type Report {
+  period: String!
+  startDate: String!
+  endDate: String!
+  totalCompletions: Int!
+  activeHabits: Int!
+  completionsPerDay: [DailyCompletion!]!
+}
+
+type Habit {
+  id: ID!
+  name: String!
+  description: String
+  xpValue: Int!
+  archived: Boolean!
+  createdAt: String!
+}
+
+input CreateHabitInput {
+  name: String!
+  description: String
+  xpValue: Int
+}
+
+input UpdateHabitInput {
+  name: String
+  description: String
+  archived: Boolean
+  xpValue: Int
+}
+
+type Goal {
+  id: ID!
+  title: String!
+  description: String
+  habitId: ID
+  targetCount: Int
+  progressCount: Int!
+  deadline: String
+  status: String!
+  createdAt: String!
+  completedAt: String
+  failedAt: String
+  isBoss: Boolean!
+  bossType: String
+}
+
+input CreateGoalInput {
+  title: String!
+  description: String
+  habitId: ID
+  targetCount: Int
+  deadline: String
+  isBoss: Boolean
+  bossType: String
+}
+
+input UpdateGoalInput {
+  title: String
+  description: String
+  targetCount: Int
+  deadline: String
+}
+

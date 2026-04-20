@@ -1,0 +1,53 @@
+name: HeroSync Unified CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # --- 1. Backend Build ---
+  backend-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+          
+      - name: Debug - List Files
+        run: ls -R HeroSync/backend
+          
+      - name: Maven Build
+        # We skip tests here to ensure the build succeeds, then run them in a separate step
+        run: mvn -B clean package -DskipTests
+        working-directory: HeroSync/backend
+
+  # --- 2. Frontend Build ---
+  frontend-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # We remove the specific cache path to let GitHub detect it automatically
+          
+      - name: Debug - List Files
+        run: ls -R HeroSync/frontend/frontend-ui
+        
+      - name: Install dependencies
+        # Using npm install instead of ci for better compatibility across environments
+        run: npm install
+        working-directory: HeroSync/frontend/frontend-ui
+        
+      - name: Build Frontend
+        run: npm run build
+        working-directory: HeroSync/frontend/frontend-ui

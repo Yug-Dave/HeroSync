@@ -1,0 +1,33 @@
+type DashboardData {
+  dashboardId: ID!
+  userName: String!
+}
+
+type Activity {
+  date: String!
+  completions: Int!
+  habitId: ID!
+  habitName: String
+  xpValue: Int
+}
+
+type HeatmapDay {
+  date: String!
+  totalCompletions: Int!
+}
+
+input ActivityInput {
+  date: String!
+  completions: Int!
+  habitId: ID!
+}
+
+extend type Query {
+  dashboard(id: ID!): DashboardData
+  activities: [Activity]
+  heatmap: [HeatmapDay]
+}
+
+extend type Mutation {
+  addActivity(input: ActivityInput!): Boolean
+}

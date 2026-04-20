@@ -1,0 +1,50 @@
+server:
+  port: 8080
+  tomcat:
+    max-http-post-size: 50MB
+    max-swallow-size: 50MB
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  application:
+    name: HeroSync
+
+  # ── MySQL Database ────────────────────────────────────────────────────────────
+  datasource:
+    url: jdbc:mysql://localhost:3306/HeroSync_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+  # ── Email (SMTP) ──────────────────────────────────────────────────────────────
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+  graphql:
+    graphiql:
+      enabled: true
+
+# ── Application settings ───────────────────────────────────────────────────────
+app:
+  base-url: ${APP_BASE_URL:http://localhost:5173}
+  mail:
+    from: ${MAIL_USERNAME:noreply@herosync.local}
