@@ -92,7 +92,7 @@ async function toggleComplete(habit, e) {
 
 async function loadProfile() {
   try {
-    const res = await http.get('/api/profile/me');
+    const res = await http.get('/profile/me');
     userName.value = res.data?.name || 'Hero';
   } catch { userName.value = ''; }
 }

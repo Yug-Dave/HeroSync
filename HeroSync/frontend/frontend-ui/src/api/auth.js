@@ -9,7 +9,7 @@ import { http, extractError } from "./http";
  */
 export async function register(payload) {
   try {
-    const res = await http.post("/api/auth/register", payload);
+    const res = await http.post("/auth/register", payload);
     return res.data;
   } catch (error) {
     throw extractError(error, "Registration failed. Please try again.");
@@ -25,7 +25,7 @@ export async function register(payload) {
  */
 export async function login(payload) {
   try {
-    const res = await http.post("/api/auth/login", payload);
+    const res = await http.post("/auth/login", payload);
     return res.data;
   } catch (error) {
     throw extractError(error, "Login failed. Please check your credentials.");
@@ -40,7 +40,7 @@ export async function login(payload) {
  */
 export async function verifyEmail(token) {
   try {
-    const res = await http.get("/api/auth/verify", { params: { token } });
+    const res = await http.get("/auth/verify", { params: { token } });
     return res.data;
   } catch (error) {
     throw extractError(error, "Verification failed. The link may have expired.");
@@ -55,7 +55,7 @@ export async function verifyEmail(token) {
  */
 export async function resendVerification(email) {
   try {
-    const res = await http.post("/api/auth/resend-verification", { email });
+    const res = await http.post("/auth/resend-verification", { email });
     return res.data;
   } catch (error) {
     throw extractError(error, "Could not resend verification email. Please try again.");
@@ -67,7 +67,7 @@ export async function resendVerification(email) {
  * @returns {Promise<UserSummaryDto>}
  */
 export async function me() {
-  const res = await http.get("/api/auth/me", {
+  const res = await http.get("/auth/me", {
     headers: {
       "Cache-Control": "no-cache",
       Pragma: "no-cache",
@@ -85,7 +85,7 @@ export async function me() {
  */
 export async function updateProfile(payload) {
   try {
-    const res = await http.put("/api/profile/me", payload);
+    const res = await http.put("/profile/me", payload);
     return res.data;
   } catch (error) {
     throw extractError(error, "Profile update failed. Please try again.");
@@ -96,5 +96,5 @@ export async function updateProfile(payload) {
  * Terminates the current session by calling the Spring Security logout endpoint.
  */
 export async function logout() {
-  await http.post("/api/auth/logout");
+  await http.post("/auth/logout");
 }

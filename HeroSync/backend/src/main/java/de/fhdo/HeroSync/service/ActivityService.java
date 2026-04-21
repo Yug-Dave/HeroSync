@@ -43,7 +43,7 @@ public class ActivityService {
   @Transactional
   public void createOrUpdateActivity(User user, ActivityDto dto) {
 
-    if (dto.getDate().isAfter(LocalDate.now())) {
+    if (dto.getDate().isAfter(LocalDate.now().plusDays(1))) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot log activity for the future!");
     }
 

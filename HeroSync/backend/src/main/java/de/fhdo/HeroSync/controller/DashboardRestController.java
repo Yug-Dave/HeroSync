@@ -20,7 +20,7 @@ import java.util.List;
  * for the authenticated user.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("")
 public class DashboardRestController {
 
   private final DashboardService dashboardService;

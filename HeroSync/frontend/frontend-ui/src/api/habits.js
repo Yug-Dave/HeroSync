@@ -7,7 +7,7 @@ import { http, extractError } from "./http";
  */
 export async function listHabits() {
   try {
-    const res = await http.get("/api/habits");
+    const res = await http.get("/habits");
     return res.data;
   } catch (error) {
     throw extractError(error, "Could not load habits. Please refresh.");
@@ -22,7 +22,7 @@ export async function listHabits() {
  */
 export async function createHabit(payload) {
   try {
-    const res = await http.post("/api/habits", payload);
+    const res = await http.post("/habits", payload);
     return res.data;
   } catch (error) {
     throw extractError(error, "Could not create habit. Please try again.");
@@ -38,7 +38,7 @@ export async function createHabit(payload) {
  */
 export async function updateHabit(id, payload) {
   try {
-    const res = await http.put(`/api/habits/${id}`, payload);
+    const res = await http.put(`/habits/${id}`, payload);
     return res.data;
   } catch (error) {
     throw extractError(error, "Could not update habit. Please try again.");
@@ -52,7 +52,7 @@ export async function updateHabit(id, payload) {
  */
 export async function deleteHabit(id) {
   try {
-    await http.delete(`/api/habits/${id}`);
+    await http.delete(`/habits/${id}`);
   } catch (error) {
     throw extractError(error, "Could not delete habit. Please try again.");
   }

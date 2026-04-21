@@ -38,7 +38,7 @@ const completedCount = computed(() => habits.value.filter(h => h.completed).leng
 const totalHabits    = computed(() => habits.value.length);
 
 // ── API helpers ────────────────────────────────────────
-const API_BASE = '';
+const API_BASE = '/api';
 const getHeaders = () => {
   const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
   const getCookie = (name) => {
@@ -64,7 +64,7 @@ async function graphqlRequest(query) {
 // ── Data fetching ──────────────────────────────────────
 async function fetchInitialData() {
   try {
-    const userRes = await fetch(`${API_BASE}/api/dashboard`, {
+    const userRes = await fetch(`${API_BASE}/dashboard`, {
       headers: { 'Accept': 'application/json' }, credentials: 'include'
     });
     if (userRes.ok) {
@@ -161,11 +161,11 @@ const toggleCheck = async (habit, index, e) => {
   const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
     .toISOString().split('T')[0];
   try {
-    const res = await fetch(`${API_BASE}/api/activities`, {
+    const res = await fetch(`${API_BASE}/activities`, {
       method: 'POST', headers: getHeaders(), credentials: 'include',
       body: JSON.stringify({
-        habitId: Number(habit.id), date: today,
-        completions: habit.completed ? 1 : 0
+        habitId: Number(habit.id), date: today, habitName: habit.name,
+        completions: habit.completed ? 1 : 0, xpValue: habit.xpValue
       })
     });
     if (!res.ok) { habit.completed = !habit.completed; return; }
@@ -559,4 +559,6 @@ onMounted(() => {
 .qa-btn { flex: 1; min-width: 110px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 13px; border-radius: 12px; background: rgba(255,255,255,.03); border: 1px solid var(--border); color: var(--text); font-weight: 600; text-decoration: none; }
 .qa-btn.primary-qa { background: linear-gradient(135deg, rgba(0,229,160,.14), rgba(59,130,246,.09)); border-color: rgba(0,229,160,.28); color: var(--accent); }
 .xp-toast { position: fixed; top: 80px; right: 20px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #040d09; font-weight: 800; padding: 10px 20px; border-radius: 12px; z-index: 999; }
+@media (max-width: 768px) { .section-head { flex-direction: column; align-items: flex-start; gap: 12px; } .sec-actions { width: 100%; display: flex; justify-content: flex-start; gap: 8px; } }
+@media (max-width: 1024px) { .stat-row { grid-template-columns: 1fr 1fr !important; } .grid .span-4 { grid-column: span 12 !important; } } @media (max-width: 768px) { .stat-row { grid-template-columns: 1fr !important; } .hm-grid { justify-content: center; } .grid .card { height: auto !important; min-height: 400px; } }
 </style>

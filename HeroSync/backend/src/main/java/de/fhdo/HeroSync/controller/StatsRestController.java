@@ -17,7 +17,7 @@ import java.util.Map;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestController
-@RequestMapping("/api/stats")
+ @RequestMapping("/stats")
 public class StatsRestController {
 
   private final UserRepository userRepository;

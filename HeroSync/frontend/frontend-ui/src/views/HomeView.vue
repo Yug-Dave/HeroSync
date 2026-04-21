@@ -61,8 +61,8 @@
               <div class="meta mb-12"><span class="badge">Next Step</span></div>
               <p class="meta">
                 We will connect these cards to your backend:
-                <strong>/api/reports/weekly</strong>, <strong>/api/reports/monthly</strong>,
-                <strong>/api/achievements</strong>, <strong>/api/achievements/unlocked</strong>.
+                <strong>/reports/weekly</strong>, <strong>/reports/monthly</strong>,
+                <strong>/achievements</strong>, <strong>/achievements/unlocked</strong>.
               </p>
             </div>
           </div>

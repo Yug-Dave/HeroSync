@@ -36,7 +36,7 @@ const onAvatarCreated = async (payload) => {
 async function loadData() {
   loading.value = true;
   try {
-    const res = await http.get('/api/profile/me');
+    const res = await http.get('/profile/me');
     user.value = res.data;
   } catch (e) {
     console.error(e);
@@ -49,7 +49,7 @@ async function saveProfile(isAutoSave = false) {
   loading.value = true;
   message.value = '';
   try {
-    await http.put('/api/profile/me', {
+    await http.put('/profile/me', {
       name: user.value.name,
       bio: user.value.bio,
       avatar: user.value.avatar
@@ -437,4 +437,5 @@ input:checked + .slider:before { transform: translateX(20px); }
   0%, 100% { opacity: 0.5; transform: scaleX(1); }
   50% { opacity: 0.8; transform: scaleX(1.2); }
 }
+@media (max-width: 768px) { .avatar-edit { flex-direction: column; align-items: flex-start; gap: 15px; } .input-row { flex-wrap: wrap; } .settings-panel { padding: 20px; } }
 </style>
