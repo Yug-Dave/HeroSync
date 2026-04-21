@@ -416,3 +416,48 @@ body {
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* 📱 UNIVERSAL MOBILE OPTIMIZATION */
+@media (max-width: 768px) {
+  /* Prevent horizontal scrolling at the root level */
+  html, body {
+    overflow-x: hidden !important;
+    position: relative;
+    width: 100%;
+  }
+
+  /* Force every grid to a single column */
+  .grid, .stats-grid, .dashboard-grid, .quests-grid, .missions-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  /* Ensure all spans/columns take full width */
+  .span-4, .span-6, .span-8, .span-12 {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+  }
+
+  /* Adjust Containers for small screens */
+  .container {
+    width: 94vw !important;
+    padding: 16px 0 !important;
+  }
+
+  /* Fix Header and Sidebar padding */
+  .main-content {
+    padding: 12px !important;
+  }
+}
+
+/* 📱 UNIVERSAL MOBILE OPTIMIZATION */
+@media (max-width: 768px) {
+  html, body { overflow-x: hidden !important; width: 100%; }
+  .grid, .stats-grid, .dashboard-grid, .quests-grid, .missions-grid {
+    display: flex !important; flex-direction: column !important; gap: 16px !important;
+  }
+  .span-4, .span-6, .span-8, .span-12 { width: 100% !important; }
+  .container { width: 94vw !important; padding: 16px 0 !important; }
+  .main-content { padding: 12px !important; }
+}

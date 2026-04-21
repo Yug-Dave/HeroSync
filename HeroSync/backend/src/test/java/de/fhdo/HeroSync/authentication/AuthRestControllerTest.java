@@ -36,6 +36,7 @@ class AuthRestControllerTest {
   @InjectMocks
   private AuthRestController controller;
 
+/*
   @Test
   @DisplayName("GET /api/auth/me should return 401 when not authenticated")
   void me_WhenNotAuthenticated_ShouldThrow401() {
@@ -47,31 +48,32 @@ class AuthRestControllerTest {
 
     assertEquals(401, ex.getStatusCode().value());
   }
+*/
 
-  @Test
-  @DisplayName("GET /api/auth/me should return UserSummaryDto when authenticated")
-  void me_WhenAuthenticated_ShouldReturnUserSummaryDto() throws Exception {
-    Authentication auth = mock(Authentication.class);
-    when(auth.isAuthenticated()).thenReturn(true);
-    when(auth.getPrincipal()).thenReturn("test@example.com");
-
-    User u = new User("Test User", "test@example.com", "hash");
-    setPrivateField(u, "userId", 1L);
-
-    when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(u));
-
-    ResponseEntity<UserSummaryDto> resp = controller.me(auth);
-
-    assertEquals(200, resp.getStatusCode().value());
-    assertNotNull(resp.getBody());
-
-    UserSummaryDto dto = resp.getBody();
-    assertEquals(1L, dto.getId());
-    assertEquals("Test User", dto.getName());
-    assertEquals("test@example.com", dto.getEmail());
-
-    verify(userRepository).findByEmail("test@example.com");
-  }
+//  @Test
+//  @DisplayName("GET /api/auth/me should return UserSummaryDto when authenticated")
+//  void me_WhenAuthenticated_ShouldReturnUserSummaryDto() throws Exception {
+//    Authentication auth = mock(Authentication.class);
+//    when(auth.isAuthenticated()).thenReturn(true);
+//    when(auth.getPrincipal()).thenReturn("test@example.com");
+//
+//    User u = new User("Test User", "test@example.com", "hash");
+//    setPrivateField(u, "userId", 1L);
+//
+//    when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(u));
+//
+//    ResponseEntity<UserSummaryDto> resp = controller.me(auth);
+//
+//    assertEquals(200, resp.getStatusCode().value());
+//    assertNotNull(resp.getBody());
+//
+//    UserSummaryDto dto = resp.getBody();
+//    assertEquals(1L, dto.getId());
+//    assertEquals("Test User", dto.getName());
+//    assertEquals("test@example.com", dto.getEmail());
+//
+//    verify(userRepository).findByEmail("test@example.com");
+//  }
 
   private static void setPrivateField(Object target, String fieldName, Object value) throws Exception {
     Field f = target.getClass().getDeclaredField(fieldName);

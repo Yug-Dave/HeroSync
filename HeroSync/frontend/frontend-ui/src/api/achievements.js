@@ -7,7 +7,7 @@ import { http, extractError } from "./http";
  */
 export async function getAllAchievements() {
   try {
-    const res = await http.get("/api/achievements");
+    const res = await http.get("/achievements");
     return res.data;
   } catch (error) {
     throw extractError(error, "Could not load achievements. Please refresh.");
@@ -21,7 +21,7 @@ export async function getAllAchievements() {
  */
 export async function getUnlockedAchievements() {
   try {
-    const res = await http.get("/api/achievements/unlocked");
+    const res = await http.get("/achievements/unlocked");
     return res.data;
   } catch (error) {
     throw extractError(error, "Could not load unlocked achievements.");
@@ -36,7 +36,7 @@ export async function getUnlockedAchievements() {
  */
 export async function evaluateAchievements() {
   try {
-    const res = await http.post("/api/achievements/evaluate");
+    const res = await http.post("/achievements/evaluate");
     return res.data;
   } catch (error) {
     throw extractError(error, "Achievement evaluation failed. Please try again.");

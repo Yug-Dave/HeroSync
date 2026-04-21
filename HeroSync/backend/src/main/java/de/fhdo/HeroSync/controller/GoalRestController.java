@@ -20,7 +20,7 @@ import java.util.List;
  * All endpoints are session-protected and scoped to the authenticated user.
  */
 @RestController
-@RequestMapping("/api/goals")
+ @RequestMapping("/goals")
 public class GoalRestController {
 
   private final GoalService goalService;
