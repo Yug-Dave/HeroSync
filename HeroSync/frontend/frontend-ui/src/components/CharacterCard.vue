@@ -369,4 +369,5 @@ const resetTilt = () => {
 /* Transitions */
 .hologram-fade-enter-active, .hologram-fade-leave-active { transition: all 0.4s ease; }
 .hologram-fade-enter-from, .hologram-fade-leave-to { opacity: 0; transform: scale(0.95); }
+@media (max-width: 768px) { .card-main-layout { flex-direction: column; text-align: center; gap: 16px; } .content-header { flex-direction: column; align-items: center; gap: 8px; } .header-right { align-items: center; } .xp-meta { flex-direction: column; gap: 4px; } .hologram-layout { flex-direction: column; overflow-y: auto; } .hologram-modal { height: 90vh; max-height: none; overflow: hidden; } .stage-container { flex: none; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); min-height: 400px; } .viewer-3d { height: 350px; } .intel-panel { flex: none; padding: 20px; overflow: visible; } .intel-title { margin-left: 0; font-size: 1.5rem; } }
 </style>

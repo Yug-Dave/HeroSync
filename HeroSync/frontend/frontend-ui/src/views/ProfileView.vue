@@ -317,7 +317,7 @@ export default {
       this.loading = true;
       try {
         // 1. Load Profile
-        const res = await http.get("/api/profile/me");
+        const res = await http.get("/profile/me");
         const p = res.data || {};
 
         this.form.userId = p.userId ?? null;
@@ -331,7 +331,7 @@ export default {
         // 2. Load Dashboard & XP History
         // Note: Promise.allSettled returns an array in the order provided
         const [dashRes, statsRes] = await Promise.allSettled([
-          http.get("/api/dashboard"),
+          http.get("/dashboard"),
           getXpHistory()
         ]);
 
@@ -411,7 +411,7 @@ export default {
           bio: this.form.bio,
           avatar: this.form.avatar 
         };
-        const res = await http.put("/api/profile/me", payload);
+        const res = await http.put("/profile/me", payload);
 
         const updated = res.data || {};
         const newSavedBio = updated.bio ?? this.form.bio ?? "";

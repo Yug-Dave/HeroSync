@@ -12,14 +12,14 @@ const user = ref({ name: 'Hero', avatar: '' });
 /** Calls the Spring Security logout endpoint, then redirects to the landing page. */
 const confirmLogout = async () => {
   showLogoutModal.value = false;
-  try { await http.post('/api/auth/logout'); } catch { /* session may already be invalid */ }
+  try { await http.post('/auth/logout'); } catch { /* session may already be invalid */ }
   finally { window.location.href = '/'; }
 };
 
 /** Fetches the current user's name and avatar for the header display. */
 const fetchUser = async () => {
   try {
-    const res = await fetch('/api/dashboard', { headers: { Accept: 'application/json' }, credentials: 'include' });
+    const res = await fetch('/dashboard', { headers: { Accept: 'application/json' }, credentials: 'include' });
     if (res.ok) {
       const d = await res.json();
       user.value.name   = d.userName || 'Hero';

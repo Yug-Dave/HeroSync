@@ -106,4 +106,5 @@ function formatDate(s){ return s ? String(s).slice(0,10) : "—"; }
   border: 1px dashed var(--border); border-radius: 16px;
   background: rgba(255, 255, 255, 0.01); font-size: 0.95rem;
 }
+@media (max-width: 768px) { .hero-table { min-width: 100%; } .hero-table th, .hero-table td { padding: 10px; font-size: 0.85rem; } .count-badge { min-width: 28px; height: 24px; font-size: 0.8rem; } }
 </style>

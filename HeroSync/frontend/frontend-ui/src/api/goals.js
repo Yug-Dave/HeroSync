@@ -7,7 +7,7 @@ import { http, extractError } from "./http";
  */
 export async function listGoals() {
   try {
-    const res = await http.get("/api/goals");
+    const res = await http.get("/goals");
     return res.data;
   } catch (error) {
     throw extractError(error, "Could not load goals. Please refresh.");
@@ -22,7 +22,7 @@ export async function listGoals() {
  */
 export async function getGoal(id) {
   try {
-    const res = await http.get(`/api/goals/${id}`);
+    const res = await http.get(`/goals/${id}`);
     return res.data;
   } catch (error) {
     throw extractError(error, "Could not load goal.");
@@ -37,7 +37,7 @@ export async function getGoal(id) {
  */
 export async function createGoal(payload) {
   try {
-    const res = await http.post("/api/goals", payload);
+    const res = await http.post("/goals", payload);
     return res.data;
   } catch (error) {
     throw extractError(error, "Could not create goal. Please try again.");
@@ -52,7 +52,7 @@ export async function createGoal(payload) {
  */
 export async function completeSoloGoal(id) {
   try {
-    const res = await http.post(`/api/goals/${id}/complete`);
+    const res = await http.post(`/goals/${id}/complete`);
     return res.data;
   } catch (error) {
     throw extractError(error, "Could not complete goal. Please try again.");
@@ -68,7 +68,7 @@ export async function completeSoloGoal(id) {
  */
 export async function updateGoal(id, payload) {
   try {
-    const res = await http.put(`/api/goals/${id}`, payload);
+    const res = await http.put(`/goals/${id}`, payload);
     return res.data;
   } catch (error) {
     throw extractError(error, "Could not update goal. Please try again.");
@@ -82,7 +82,7 @@ export async function updateGoal(id, payload) {
  */
 export async function deleteGoal(id) {
   try {
-    await http.delete(`/api/goals/${id}`);
+    await http.delete(`/goals/${id}`);
   } catch (error) {
     throw extractError(error, "Could not delete goal. Please try again.");
   }

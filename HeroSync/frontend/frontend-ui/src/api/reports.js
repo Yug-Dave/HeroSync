@@ -9,7 +9,7 @@ import { http, extractError } from "./http";
  */
 export async function getWeeklyReport(date) {
   try {
-    const res = await http.get("/api/reports/weekly", { params: { date } });
+    const res = await http.get("/reports/weekly", { params: { date } });
     return res.data;
   } catch (error) {
     throw extractError(error, "Could not load weekly report. Please try again.");
@@ -25,7 +25,7 @@ export async function getWeeklyReport(date) {
  */
 export async function getMonthlyReport(year, month) {
   try {
-    const res = await http.get("/api/reports/monthly", { params: { year, month } });
+    const res = await http.get("/reports/monthly", { params: { year, month } });
     return res.data;
   } catch (error) {
     throw extractError(error, "Could not load monthly report. Please try again.");

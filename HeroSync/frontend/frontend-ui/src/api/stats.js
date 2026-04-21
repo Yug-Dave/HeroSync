@@ -8,7 +8,7 @@ import { http, extractError } from "./http";
  */
 export async function getXpHistory() {
   try {
-    const res = await http.get("/api/stats/xp-history");
+    const res = await http.get("/stats/xp-history");
     return res.data;
   } catch (error) {
     throw extractError(error, "Could not load XP history. Please refresh.");

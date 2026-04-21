@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(
-  value = "/api/achievements",
+  value = "/achievements",
   produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }
 )
 public class AchievementRestController {
