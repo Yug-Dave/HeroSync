@@ -70,6 +70,9 @@ In IntelliJ (Run Configurations) or your OS environment, set the following:
 | :--- | :--- | :--- |
 | `DB_USERNAME` | Your MySQL Username | `root` |
 | `DB_PASSWORD` | **REQUIRED** - Your MySQL Root Password | *None* |
+| `MAIL_USERNAME`| Your Email Address (SMTP) | *None* |
+| `MAIL_PASSWORD`| Your Email App Password | *None* |
+| `APP_BASE_URL` | Frontend URL (CORS) | `http://localhost:5173` |
 
 > **Note:** The `application.yaml` is configured to create tables automatically (`ddl-auto: update`) when the app starts.
 
@@ -79,7 +82,7 @@ In IntelliJ (Run Configurations) or your OS environment, set the following:
 
 ### Option 1: Using IntelliJ IDEA
 
-1.  Open the `HeroSync/backend` folder in IntelliJ.
+1.  Open the `backend` folder in IntelliJ.
 2.  Wait for Maven to download dependencies.
 3.  Open `src/main/java/de/fhdo/HeroSync/HeroSyncApplication.java`.
 4.  Click the **Green Play Button** (Run).
