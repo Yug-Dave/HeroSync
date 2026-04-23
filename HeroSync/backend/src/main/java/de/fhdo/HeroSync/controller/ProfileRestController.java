@@ -19,9 +19,14 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class ProfileRestController {
   private final UserRepository userRepository;
   private final ProfileRepository profileRepository;
-  public ProfileRestController(UserRepository userRepository, ProfileRepository profileRepository) {
+  private final de.fhdo.HeroSync.service.AvatarStorageService avatarStorageService;
+
+  public ProfileRestController(UserRepository userRepository, 
+                               ProfileRepository profileRepository,
+                               de.fhdo.HeroSync.service.AvatarStorageService avatarStorageService) {
     this.userRepository = userRepository;
     this.profileRepository = profileRepository;
+    this.avatarStorageService = avatarStorageService;
   }
   @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<ProfileDto> getMe(Authentication auth) {
@@ -33,8 +38,14 @@ public class ProfileRestController {
   public ResponseEntity<ProfileDto> updateMe(Authentication auth, @Valid @RequestBody UpdateProfileRequest req) {
     User u = requireUser(auth);
     if (req.getName() != null) { u.setName(req.getName()); userRepository.save(u); }
+    String processedAvatar = avatarStorageService.processAvatar(req.getAvatar());
     Profile p = profileRepository.findByUserUserId(u.getUserId()).orElse(null);
-    if (p == null) { p = new Profile(u, req.getBio(), req.getAvatar()); } else { p.setBio(req.getBio()); p.setAvatar(req.getAvatar()); }
+    if (p == null) { 
+      p = new Profile(u, req.getBio(), processedAvatar); 
+    } else { 
+      p.setBio(req.getBio()); 
+      p.setAvatar(processedAvatar); 
+    }
     profileRepository.save(p);
     return ResponseEntity.ok(new ProfileDto(u.getUserId(), u.getName(), u.getEmail(), p.getBio(), p.getAvatar()));
   }

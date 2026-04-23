@@ -460,4 +460,77 @@ onUnmounted(() => {
 .modal-fade-leave-active { transition: all .2s ease; }
 .modal-fade-enter-from, .modal-fade-leave-to { opacity: 0; }
 .modal-fade-enter-from .confirm-modal { transform: scale(.95); }
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+  .btn-new {
+    width: 100%;
+    justify-content: center;
+    padding: 14px;
+  }
+
+  /* Horizontal Stats for Mobile */
+  .stats-bar {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .stats-bar::-webkit-scrollbar { display: none; }
+  .stat-pill {
+    flex: 0 0 160px !important;
+    scroll-snap-align: start;
+  }
+
+  /* 2-Column Grid for Quests (The "Not-Vertical-Stack" Request) */
+  .quest-list {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+
+  .quest-card {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center;
+    padding: 20px 12px !important;
+    height: 100%;
+  }
+
+  .quest-badge-icon {
+    margin-bottom: 12px;
+  }
+
+  .quest-body {
+    width: 100%;
+  }
+  .quest-name {
+    font-size: 0.95rem;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .quest-desc {
+    display: none; /* Hide desc on compact grid */
+  }
+
+  .quest-rewards {
+    margin: 12px 0;
+  }
+
+  .quest-actions {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 12px;
+  }
+}
 </style>

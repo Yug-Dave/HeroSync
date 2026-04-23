@@ -722,4 +722,47 @@ export default {
 .empty-state p { margin: 0; font-size: .95rem; }
 
 .loading-text { font-style: italic; color: var(--muted); }
+@media (max-width: 768px) {
+  .container { padding: 20px 0; }
+  
+  /* Modern Avatar Matrix for Mobile */
+  .avatar-selector {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 12px !important;
+    margin-top: 16px !important;
+  }
+  .avatar-option {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1;
+    border-radius: 16px !important;
+  }
+
+  /* Achievements Mobile Grid */
+  .achList {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important; /* 2-column grid instead of vertical stack */
+    gap: 16px !important;
+  }
+  
+  /* Horizontal scroll for graph if needed */
+  .graph-container {
+    overflow-x: auto;
+    padding: 16px;
+  }
+  .chart-wrapper {
+    min-width: 300px;
+  }
+
+  .achHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .achActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
 </style>

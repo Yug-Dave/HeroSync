@@ -1,27 +1,44 @@
 <script setup>
+import { ref, onMounted, defineEmits } from 'vue';
+
+const emit = defineEmits(['learn-more']);
+
+const mouseX = ref(0);
+const mouseY = ref(0);
+
+function handleMouseMove(e) {
+  mouseX.value = (e.clientX / window.innerWidth - 0.5) * 20;
+  mouseY.value = (e.clientY / window.innerHeight - 0.5) * 20;
+}
+
+onMounted(() => {
+  window.addEventListener('mousemove', handleMouseMove);
+});
 </script>
 
 <template>
-  <section class="hero-section">
-    <!-- Starfield background elements -->
-    <div class="stars"></div>
-    <div class="stars2"></div>
-    <div class="stars3"></div>
-    <div class="hero-glow"></div>
+  <section id="hero" class="hero-section">
+    <!-- Starfield with parallax -->
+    <div class="stars-container">
+      <div class="stars" :style="{ transform: `translate(${mouseX * 0.5}px, ${mouseY * 0.5}px)` }"></div>
+      <div class="stars2" :style="{ transform: `translate(${mouseX * 0.8}px, ${mouseY * 0.8}px)` }"></div>
+    </div>
+    
+    <div class="hero-glow" :style="{ transform: `translate(calc(-50% + ${mouseX}px), calc(-50% + ${mouseY}px))` }"></div>
 
     <div class="hero-content">
-      <div class="xp-badge">
+      <div class="hero-pill">
         <span class="xp-icon">⚡</span>
-        Your journey begins here
+        Your Journey Begins Here
       </div>
 
       <h1 class="hero-title">
-        Level Up <br/>
-        <span class="gradient-text">Your Life</span>
+        Level Up ! <br/>
+        <span class="gradient-text">Slay Real Bosses</span>
       </h1>
 
       <p class="hero-subtitle">
-        Turn your daily habits into an epic quest. Earn XP, unlock achievements, and become the hero of your own story.
+        Your habits are your weapons. Build your 3D Avatar, earn XP, unlock achievements, and become the hero of your own story.
       </p>
 
       <div class="hero-actions">
@@ -29,7 +46,7 @@
           <span class="btn-text">Start Your Quest</span>
           <span class="btn-glow"></span>
         </router-link>
-        <a href="#features" class="btn-ghost">Explore Features</a>
+        <button @click="emit('learn-more')" class="btn-ghost">Learn Our Method</button>
       </div>
 
       <div class="hero-stats-row">
@@ -37,6 +54,7 @@
         <div class="stat-pill">🏆 Earn Badges</div>
         <div class="stat-pill">⚔️ Complete Quests</div>
       </div>
+
     </div>
   </section>
 </template>
@@ -44,150 +62,71 @@
 <style scoped>
 .hero-section {
   position: relative;
-  min-height: calc(100vh - 70px);
+  height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 40px 20px;
-  background: radial-gradient(ellipse at bottom, #0d162a 0%, #070a10 100%);
+  padding: 100px 20px 20px;
+  background: transparent;
 }
 
+.stars-container { position: absolute; inset: 0; pointer-events: none; }
 .hero-glow {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(0,229,160,0.15) 0%, transparent 60%);
-  border-radius: 50%;
-  pointer-events: none;
-  filter: blur(40px);
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.08) 0%, transparent 70%);
+  border-radius: 50%; pointer-events: none; filter: blur(80px);
 }
+.theme-light .hero-glow { display: none; }
 
 .hero-content {
-  position: relative;
-  z-index: 10;
-  max-width: 800px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  position: relative; z-index: 10;
+  max-width: 900px; text-align: center;
+  display: flex; flex-direction: column; align-items: center;
 }
 
-.xp-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(0,229,160,0.1);
-  border: 1px solid rgba(0,229,160,0.3);
-  padding: 6px 16px;
-  border-radius: 30px;
-  color: var(--accent);
-  font-family: var(--ff-head);
-  font-weight: 700;
-  font-size: 0.9rem;
-  margin-bottom: 24px;
-  animation: fadeUp 0.8s ease forwards;
-}
+
 
 .hero-title {
-  font-family: var(--ff-display);
-  font-size: clamp(3rem, 8vw, 5rem);
-  font-weight: 900;
-  line-height: 1.1;
-  margin: 0 0 24px;
-  letter-spacing: -1px;
-  animation: fadeUp 0.8s ease 0.1s forwards;
-  opacity: 0;
+  font-family: var(--ff-display); font-size: clamp(3rem, 10vw, 5.5rem);
+  font-weight: 950; line-height: 0.95; margin: 0 0 32px;
+  letter-spacing: -2px; color: var(--text);
 }
 
 .gradient-text {
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 40px rgba(0,229,160,0.3);
 }
 
 .hero-subtitle {
-  font-size: clamp(1.1rem, 2vw, 1.3rem);
-  color: var(--text-dim);
-  max-width: 600px;
-  margin: 0 auto 40px;
-  line-height: 1.6;
-  animation: fadeUp 0.8s ease 0.2s forwards;
-  opacity: 0;
+  font-size: clamp(1.1rem, 2.5vw, 1.3rem); color: var(--text-dim);
+  max-width: 650px; margin: 0 auto 48px; line-height: 1.5; font-weight: 500;
 }
 
-.hero-actions {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  margin-bottom: 60px;
-  animation: fadeUp 0.8s ease 0.3s forwards;
-  opacity: 0;
-}
-
-@media (max-width: 500px) {
-  .hero-actions {
-    flex-direction: column;
-    width: 100%;
-    max-width: 300px;
-  }
-}
+.hero-actions { display: flex; gap: 20px; justify-content: center; margin-bottom: 60px; }
 
 .btn-epic {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px 36px;
-  background: linear-gradient(135deg, var(--accent), #1dbd88);
-  color: #040d09;
-  font-family: var(--ff-head);
-  font-size: 1.1rem;
-  font-weight: 800;
-  border-radius: 12px;
-  text-decoration: none;
-  overflow: hidden;
-  transition: transform 0.2s;
-  box-shadow: 0 8px 30px rgba(0,229,160,0.3);
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  padding: 18px 42px; background: linear-gradient(135deg, var(--accent), #1dbd88);
+  color: #000; font-family: var(--ff-head); font-size: 1.1rem; font-weight: 800;
+  border-radius: 14px; text-decoration: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 30px rgba(var(--accent-rgb), 0.3);
 }
+.btn-epic:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(var(--accent-rgb), 0.4); }
 
-.btn-epic:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0,229,160,0.4);
-}
 
-.btn-glow {
-  position: absolute;
-  top: 0; left: -100%;
-  width: 50%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  animation: shimmer-slide 3s infinite;
-}
 
 .btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px 36px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border2);
-  color: var(--text);
-  font-family: var(--ff-head);
-  font-size: 1.1rem;
-  font-weight: 700;
-  border-radius: 12px;
-  text-decoration: none;
-  transition: all 0.2s;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 18px 42px; background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  color: var(--text); font-family: var(--ff-head); font-size: 1.1rem; font-weight: 700;
+  border-radius: 14px; cursor: pointer; transition: all 0.3s ease;
 }
-
-.btn-ghost:hover {
-  background: rgba(255,255,255,0.08);
-  border-color: var(--accent);
-  color: var(--accent);
-}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
 .hero-stats-row {
   display: flex;
@@ -209,21 +148,24 @@
   color: var(--text);
 }
 
-/* Very simple CSS stars */
-.stars, .stars2, .stars3 {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: 
-    radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
-    radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
-    radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
-    radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
-    radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0)),
-    radial-gradient(2px 2px at 160px 120px, #ddd, rgba(0,0,0,0));
-  background-repeat: repeat;
-  background-size: 200px 200px;
-  opacity: 0.2;
+@keyframes scroll-wheel { 0% { opacity: 1; transform: translateX(-50%) translateY(0); } 100% { opacity: 0; transform: translateX(-50%) translateY(12px); } }
+
+/* Stars */
+.stars, .stars2 {
+  position: absolute; inset: 0;
+  background-image: radial-gradient(1.5px 1.5px at 10% 20%, #fff, transparent), radial-gradient(2px 2px at 30% 50%, #fff, transparent), radial-gradient(1.5px 1.5px at 70% 30%, #fff, transparent);
+  background-size: 300px 300px; opacity: 0.1;
 }
-.stars2 { background-size: 300px 300px; opacity: 0.15; animation: float 10s linear infinite; }
-.stars3 { background-size: 400px 400px; opacity: 0.1; animation: float 15s linear infinite; }
+.theme-light .stars, .theme-light .stars2 { opacity: 0; }
+@media (max-width: 768px) {
+  .hero-section { padding: 120px 24px 40px; }
+  .hero-title { font-size: clamp(2.4rem, 11vw, 3.2rem); line-height: 1.1; margin-bottom: 24px; letter-spacing: -1.5px; }
+  .hero-subtitle { font-size: 1rem; margin-bottom: 32px; line-height: 1.5; }
+  .hero-actions { flex-direction: column; width: 100%; gap: 14px; margin-bottom: 40px; }
+  .btn-epic { width: 100%; padding: 18px 30px; font-size: 1.05rem; border-radius: 16px; }
+  .btn-ghost { width: 100%; padding: 18px 30px; font-size: 1.05rem; border-radius: 16px; background: rgba(255,255,255,0.03); }
+  .hero-stats-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; }
+  .stat-pill { font-size: 0.75rem; padding: 10px; text-align: center; border-radius: 12px; }
+  .stat-pill:last-child { grid-column: span 2; }
+}
 </style>
