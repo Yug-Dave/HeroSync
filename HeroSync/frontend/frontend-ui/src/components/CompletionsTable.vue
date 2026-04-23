@@ -48,63 +48,63 @@ function formatDate(s){ return s ? String(s).slice(0,10) : "—"; }
 
 <style scoped>
 .table-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow);
 }
 
 .card-head { margin-bottom: 20px; }
 .title-group { display: flex; align-items: center; gap: 14px; }
 .title-icon {
   width: 40px; height: 40px; border-radius: 10px;
-  background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);
-  display: flex; align-items: center; justify-content: center; color: var(--accent-2);
+  background: var(--card2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; color: var(--accent);
 }
 
-.card-title { margin: 0; font-family: var(--ff-head); font-size: 1.15rem; font-weight: 700; color: #fff; }
+.card-title { margin: 0; font-family: var(--ff-head); font-size: 1.3rem; font-weight: 700; color: var(--text); }
 .card-sub { margin: 4px 0 0; color: var(--muted); font-size: 0.85rem; font-weight: 500; }
 
 .scroll-wrapper {
-  overflow: auto; border-radius: 12px; border: 1px solid var(--border);
-  background: rgba(0, 0, 0, 0.2);
+  overflow: auto; border-radius: 16px; border: 1px solid var(--border);
+  background: var(--bg);
 }
 .hero-table { width: 100%; border-collapse: collapse; min-width: 400px; }
 
 .hero-table thead th {
-  text-align: left; padding: 14px 18px;
-  background: rgba(255, 255, 255, 0.03);
+  text-align: left; padding: 16px 20px;
+  background: var(--card2);
   color: var(--muted); font-size: 0.75rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.8px;
+  text-transform: uppercase; letter-spacing: 1px;
   border-bottom: 1px solid var(--border);
 }
 
 .hero-table tbody td {
-  padding: 14px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-  color: #fff; font-size: 0.95rem;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  color: var(--text); font-size: 0.95rem;
 }
 .hero-table tbody tr:last-child td { border-bottom: none; }
-.hero-table tbody tr:hover td { background: rgba(255, 255, 255, 0.02); }
+.hero-table tbody tr:hover td { background: var(--card2); }
 
-.date-cell { font-family: monospace; font-weight: 600; color: var(--accent-2); }
+.date-cell { font-family: monospace; font-weight: 600; color: var(--accent); }
 .right { text-align: right; }
 
 .count-badge {
   display: inline-flex; align-items: center; justify-content: center;
-  min-width: 40px; height: 26px; border-radius: 13px;
-  background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);
-  color: var(--muted); font-family: var(--ff-head); font-size: 0.85rem; font-weight: 800;
+  min-width: 44px; height: 28px; border-radius: 14px;
+  background: var(--card3); border: 1px solid var(--border);
+  color: var(--muted); font-family: var(--ff-head); font-size: 0.9rem; font-weight: 800;
 }
 .count-badge.has-done {
-  background: rgba(0, 229, 160, 0.1); border-color: rgba(0, 229, 160, 0.3);
+  background: rgba(var(--accent-rgb), 0.1); border-color: rgba(var(--accent-rgb), 0.3);
   color: var(--accent);
 }
 
 .empty-state {
-  padding: 30px; text-align: center; color: var(--muted);
-  border: 1px dashed var(--border); border-radius: 16px;
-  background: rgba(255, 255, 255, 0.01); font-size: 0.95rem;
+  padding: 32px; text-align: center; color: var(--muted);
+  border: 1px dashed var(--border); border-radius: 20px;
+  background: var(--card2); font-size: 0.95rem;
 }
-@media (max-width: 768px) { .hero-table { min-width: 100%; } .hero-table th, .hero-table td { padding: 10px; font-size: 0.85rem; } .count-badge { min-width: 28px; height: 24px; font-size: 0.8rem; } }
+@media (max-width: 768px) { .hero-table { min-width: 100%; } .hero-table th, .hero-table td { padding: 12px; font-size: 0.85rem; } .count-badge { min-width: 32px; height: 24px; font-size: 0.8rem; } }
 </style>

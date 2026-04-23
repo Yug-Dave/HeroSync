@@ -43,14 +43,14 @@ public class ActivityService {
   @Transactional
   public void createOrUpdateActivity(User user, ActivityDto dto) {
 
-    if (dto.getDate().isAfter(LocalDate.now().plusDays(1))) {
+    if (dto.getDate().isAfter(LocalDate.now())) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot log activity for the future!");
     }
 
     Habit habit = habitRepository.findById(dto.getHabitId())
       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Habit not found"));
 
-    // User isolation (404 – no guessing)
+    // Ensure user isolation by verifying habit ownership.
     if (habit.getUser() == null || !habit.getUser().getUserId().equals(user.getUserId())) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Habit not found");
     }
@@ -68,11 +68,11 @@ public class ActivityService {
     int before = activity.getCompletions();
     int after = dto.getCompletions();
 
-    // Persist activity state (0/1) exactly as sent
+    // Update activity state based on the request.
     activity.setCompletions(after);
     activityRepository.save(activity);
 
-    // ---- Goal hook: ONLY when 0 -> 1 ----
+    // Process goal hooks when transition occurs from incomplete to complete.
     if (before == 0 && after == 1) {
       List<Goal> linkedGoals = goalRepository.findByUser_UserIdAndHabit_IdAndStatus(
         user.getUserId(),

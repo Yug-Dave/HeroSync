@@ -2,7 +2,7 @@ import { reactive, watch } from 'vue';
 
 const DEFAULT_CONFIG = {
   notifications: true,
-  theme: 'cyber-dark',
+  theme: 'dark',
   soundEffects: true,
   dailyReset: '00:00',
   immersionMode: true,
@@ -17,9 +17,8 @@ export function applyConfig() {
   const body = document.body;
 
   // Theme
-  body.classList.remove('theme-mythic-blue', 'theme-emerald-forest');
-  if (heroConfig.theme === 'mythic-blue') body.classList.add('theme-mythic-blue');
-  if (heroConfig.theme === 'emerald-forest') body.classList.add('theme-emerald-forest');
+  body.classList.remove('theme-light');
+  if (heroConfig.theme === 'light') body.classList.add('theme-light');
 
   // Immersion (Animations)
   if (heroConfig.immersionMode === false) {

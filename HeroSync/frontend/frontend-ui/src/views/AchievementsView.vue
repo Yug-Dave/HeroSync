@@ -465,4 +465,86 @@ onUnmounted(() => {
 }
 .empty-icon { font-size: 48px; margin-bottom: 12px; }
 .empty-state p { margin: 0; font-size: .95rem; }
+@media (max-width: 768px) {
+  .page-header { flex-direction: column; align-items: flex-start; }
+  .header-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+  
+  .progress-card {
+    padding: 16px 20px; /* Reduced vertical padding */
+    text-align: left;
+  }
+  .progress-info { 
+    flex-direction: row !important; 
+    align-items: center !important; 
+    justify-content: space-between !important;
+    gap: 12px !important; 
+    margin-bottom: 8px !important;
+  }
+  .progress-nums { 
+    flex-direction: row !important; 
+    align-items: baseline !important; 
+    gap: 4px !important;
+  }
+  .prog-label {
+    margin-left: 6px !important;
+    font-size: 0.65rem;
+    display: inline-block;
+  }
+  .prog-unlocked {
+    font-size: 1.4rem; /* Smaller, more rectangular */
+  }
+  .prog-sep, .prog-total {
+    font-size: 1rem;
+  }
+  .prog-pct-badge {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+  }
+
+  .progress-milestones { display: none; }
+  .badge-grid { grid-template-columns: 1fr; gap: 12px; }
+  .badge-card { 
+    padding: 20px 16px 16px; 
+    flex-direction: column !important; /* BACK TO COLUMN FOR BETTER FIT */
+    text-align: left !important; 
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  .badge-icon-wrap { 
+    width: 60px !important; height: 60px !important; 
+    margin: 4px 0 !important; 
+  }
+  .badge-emoji svg { width: 32px; height: 32px; }
+  
+  /* Prevent tag overlap */
+  .badge-status { 
+    position: relative !important; 
+    top: 0 !important; 
+    right: 0 !important; 
+    align-self: flex-start;
+    margin-bottom: 4px;
+  }
+  .rarity-tag { 
+    position: absolute; 
+    top: 8px; 
+    left: 8px; 
+  }
+  .xp-reward-badge { 
+    position: absolute; 
+    top: 8px; 
+    right: 8px; 
+  }
+
+  .badge-name { font-size: 1.1rem !important; margin-top: 4px !important; }
+  .badge-desc { font-size: 0.8rem !important; margin-bottom: 8px !important; }
+  .badge-meta { 
+    border-top: 1px solid rgba(255,255,255,0.05); 
+    padding-top: 12px; 
+    margin-top: 4px; 
+    gap: 6px; 
+    width: 100%;
+  }
+  .meta-val { font-size: 0.75rem; }
+  .card-progress-wrap { margin-top: 4px; }
+}
 </style>

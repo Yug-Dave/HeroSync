@@ -21,7 +21,9 @@ public class ReportService {
     this.activities = activities;
   }
 
-  //  USER-ISOLATED (Assignment 5)
+  /**
+   * Generates a weekly report for the authenticated user.
+   */
   public ReportDto weekly(User user, LocalDate anyDayInWeek) {
     LocalDate start = anyDayInWeek.with(DayOfWeek.MONDAY);
     LocalDate end = start.plusDays(6);
@@ -32,7 +34,9 @@ public class ReportService {
     return build("WEEKLY", start, end, list);
   }
 
-  //  USER-ISOLATED (Assignment 5)
+  /**
+   * Generates a monthly report for the authenticated user.
+   */
   public ReportDto monthly(User user, int year, int month) {
     LocalDate start = LocalDate.of(year, month, 1);
     LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
@@ -43,7 +47,7 @@ public class ReportService {
     return build("MONTHLY", start, end, list);
   }
 
-  // ---------------- LEGACY overloads (keep Assignments 6–8 safe) ----------------
+  // ---------------- Legacy Overloads ----------------
 
   @Deprecated
   public ReportDto weekly(LocalDate anyDayInWeek) {

@@ -1,6 +1,9 @@
 type DashboardData {
   dashboardId: ID!
   userName: String!
+  avatar: String
+  currentStreak: Int!
+  totalXP: Int!
 }
 
 type Activity {
