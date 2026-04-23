@@ -4,28 +4,44 @@ services:
   db:
     image: mysql:8.0
     container_name: herosync-db
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: herosync
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - herosync_db_data:/var/lib/mysql
     ports:
       - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql
 
   backend:
-    build: ./HeroSync/backend
+    build: ./backend
     container_name: herosync-backend
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/herosync?useSSL=false&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    restart: always
     depends_on:
       - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_MAIL_HOST: ${MAIL_HOST}
+      SPRING_MAIL_PORT: ${MAIL_PORT}
+      SPRING_MAIL_USERNAME: ${MAIL_USERNAME}
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD}
+      JAVA_OPTS: "-Djava.security.egd=file:/dev/./urandom -Xms128m -Xmx384m -XX:+UseContainerSupport -XX:+UseSerialGC -XX:TieredStopAtLevel=1"
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend/frontend-ui
+    container_name: herosync-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
 
 volumes:
-  db_data:
+  herosync_db_data:
+
