@@ -537,9 +537,9 @@ onMounted(() => {
 .day-box:hover { transform: scale(1.1); }
 .day-box .dd { font-size: 10px; font-weight: 700; color: var(--text); line-height: 1; }
 .day-box .mm { font-size: 7px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
-.day-box.lvl1 { background: #064e3b; border-color: #059669; }
-.day-box.lvl2 { background: #10b981; border-color: #10b981; }
-.day-box.lvl3 { background: var(--accent); border-color: var(--accent); }
+.day-box.lvl1 { background: var(--hm-lvl1); border-color: var(--hm-lvl1-border); }
+.day-box.lvl2 { background: var(--hm-lvl2); border-color: var(--hm-lvl2-border); }
+.day-box.lvl3 { background: var(--hm-lvl3); border-color: var(--hm-lvl3-border); }
 
 /* ── AI Companion ── */
 .ai-companion-banner.mini {
@@ -659,7 +659,7 @@ onMounted(() => {
 .q-check-wrap { flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; width: 20px; height: 20px; }
 .q-checkbox { position: absolute; opacity: 0; width: 0; height: 0; }
 .q-mark { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
-.q-checkbox:checked + .q-mark { background: var(--accent); border-color: var(--accent); }
+.q-checkbox:checked + .q-mark { background: var(--hm-lvl3); border-color: var(--hm-lvl3-border); }
 .q-rarity { width: 3px; height: 32px; border-radius: 2px; }
 .q-xp { background: rgba(0,229,160,.08); border: 1px solid rgba(0,229,160,.18); color: var(--accent); border-radius: 8px; padding: 2px 8px; font-size: .72rem; font-weight: 700; }
 
