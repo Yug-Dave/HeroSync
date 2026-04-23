@@ -13,7 +13,6 @@ onMounted(() => {
     url: 'https://herosync.avaturn.dev',
   }).then(() => {
     sdk.on('export', (data) => {
-      console.log('Avaturn Export Data:', data);
       const avatarUrl = data.httpURL || data.dataURL || data.url;
       const imageUrl = data.image; 
       if (avatarUrl) {

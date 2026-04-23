@@ -29,12 +29,18 @@ public class SecurityConfig {
         .headers(h -> h.frameOptions(f -> f.disable()))
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(auth -> auth
+            // Publicly accessible paths
+            .requestMatchers("/", "/index.html", "/static/**", "/assets/**", "/favicon.ico").permitAll()
             .requestMatchers("/h2-console/**").permitAll()
             .requestMatchers("/graphiql", "/graphiql/**").permitAll()
-            .requestMatchers("/graphql", "/graphql/**").permitAll() // Allow GraphQL for now
+            .requestMatchers("/graphql", "/graphql/**").permitAll()
+            
+            // Auth endpoints (Registration, Login, etc.)
             .requestMatchers("/auth/register", "/auth/login",
                              "/auth/verify", "/auth/resend-verification").permitAll()
-            .requestMatchers("/**").permitAll() // TEMPORARY: Allow all to verify the fix
+            
+            // All other requests must be authenticated
+            .anyRequest().authenticated()
         )
         .httpBasic(h -> h.disable())
         .formLogin(form -> form.disable())

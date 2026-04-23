@@ -42,7 +42,9 @@ public class AuthService {
         return new AuthResponse(user.getUserId(), user.getName(), user.getEmail());
     }
 
-    // MISSING METHOD ADDED HERE:
+    /**
+     * Authenticates a user and initiates a session.
+     */
     public AuthResponse loginAndCreateSession(LoginRequest request) {
         return login(request);
     }

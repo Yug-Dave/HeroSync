@@ -54,44 +54,47 @@ load();
 </script>
 
 <style scoped>
-.wrap { display: grid; gap: 20px; }
+.wrap { display: grid; gap: 24px; }
 
 .toolbar {
   display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap;
-  padding: 20px; border-radius: 16px;
-  background: rgba(255, 255, 255, 0.03);
+  padding: 24px; border-radius: 24px;
+  background: var(--card);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow);
 }
 
 .field { display: grid; gap: 8px; min-width: 220px; }
-label { color: var(--muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+label { color: var(--muted); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
 input {
-  height: 42px; padding: 0 14px; border-radius: 10px;
-  border: 1px solid var(--border); background: rgba(0, 0, 0, 0.2);
-  color: var(--text); font-family: var(--ff-body); font-size: 0.95rem; outline: none; transition: all 0.2s;
+  height: 44px; padding: 0 16px; border-radius: 12px;
+  border: 1px solid var(--border); background: var(--bg);
+  color: var(--text); font-family: var(--ff-body); font-size: 1rem; outline: none; transition: all 0.2s;
 }
-input:focus { border-color: var(--accent); background: rgba(255, 255, 255, 0.05); }
+input:focus { border-color: var(--accent); background: var(--card2); }
 
 .btn {
-  height: 42px; padding: 0 24px; border-radius: 10px;
-  border: 1px solid var(--border2); background: rgba(255, 255, 255, 0.05);
-  color: var(--text); font-family: var(--ff-head); font-weight: 700;
+  height: 44px; padding: 0 28px; border-radius: 12px;
+  border: 1px solid var(--border); background: var(--card2);
+  color: var(--text); font-family: var(--ff-head); font-weight: 700; font-size: 1rem;
   cursor: pointer; transition: all 0.2s;
 }
-.btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.08); border-color: var(--accent); transform: translateY(-1px); }
-.btn:disabled { opacity: .6; cursor: not-allowed; }
+.btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
 
 .btn.primary {
-  background: linear-gradient(135deg, var(--accent-2), var(--accent));
-  color: #111; border: none;
+  background: var(--accent);
+  color: #fff; border: none;
 }
-.btn.primary:hover:not(:disabled) { box-shadow: 0 4px 15px rgba(0, 229, 160, 0.3); }
+.btn.primary:hover:not(:disabled) { 
+  background: var(--accent-2);
+  box-shadow: 0 4px 15px rgba(var(--accent-rgb), 0.3); 
+}
 
 .error {
-  padding: 12px 16px; border-radius: 12px;
-  background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #fca5a5; font-size: 0.9rem; font-weight: 500;
+  padding: 14px 18px; border-radius: 12px;
+  background: rgba(var(--danger-rgb, 239, 68, 68), 0.1); border: 1px solid rgba(var(--danger-rgb, 239, 68, 68), 0.2);
+  color: var(--danger); font-size: 0.95rem; font-weight: 600;
 }
 </style>

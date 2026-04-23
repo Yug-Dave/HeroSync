@@ -3,38 +3,35 @@
  */
 export function getAvatarImageUrl(avatarSeedOrUrl) {
   try {
-    if (!avatarSeedOrUrl || typeof avatarSeedOrUrl !== 'string') {
-      return 'https://api.dicebear.com/9.x/adventurer/svg?seed=Hero&backgroundColor=transparent';
+    const apiBase = 'https://api.dicebear.com/7.x';
+    
+    if (!avatarSeedOrUrl || typeof avatarSeedOrUrl !== 'string' || avatarSeedOrUrl.trim() === '') {
+      return `${apiBase}/adventurer/svg?seed=Hero`;
     }
 
-    const effectiveUrl = expandAvatarUrl(avatarSeedOrUrl);
+    let seedToUse = avatarSeedOrUrl;
 
-    // Support for the new 'Combo' string format: 3D_DATA|||THUMBNAIL_URL
-    if (effectiveUrl.includes('|||')) {
-      const parts = effectiveUrl.split('|||');
-      return parts[1] || parts[0]; // Return the thumbnail part
+    if (avatarSeedOrUrl.includes('|||')) {
+      const parts = avatarSeedOrUrl.split('|||');
+      seedToUse = parts[1] || parts[0]; 
     }
 
-    // Support for Ready Player Me portraits
-    if (effectiveUrl.includes('readyplayer.me') && effectiveUrl.includes('.glb')) {
-      return effectiveUrl.split('?')[0].replace('.glb', '.png') + '?size=256&camera=portrait';
+    // Check if it's a 3D model BEFORE returning as-is
+    const is3D = is3DAvatar(seedToUse);
+    if (is3D) {
+      // It's a 3D model (GLB or data:model), so return a robot preview
+      return `https://api.dicebear.com/7.x/bottts/png?seed=RobotHero`;
     }
 
-    // Support for 3D URLs that include a 2D thumbnail (common in Avaturn)
-    const imageUrlMatch = effectiveUrl.match(/image=([^&]+)/);
-    if (imageUrlMatch && imageUrlMatch[1]) {
-      return decodeURIComponent(imageUrlMatch[1]);
+    // If it's a legitimate 2D image URL, return it
+    if (seedToUse.startsWith('http') || seedToUse.startsWith('data:image/')) {
+      return seedToUse;
     }
 
-    // Fallback for 3D GLB models or Data URLs
-    if (is3DAvatar(effectiveUrl)) {
-      // Use a clean seed for the 2D fallback (Robot style for 3D)
-      return `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${encodeURIComponent(effectiveUrl.substring(0, 10))}&backgroundColor=transparent`;
-    }
-
-    return `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(avatarSeedOrUrl.substring(0, 20))}&backgroundColor=transparent`;
+    const finalSeed = seedToUse.substring(0, 20) || 'Hero';
+    return `${apiBase}/adventurer/svg?seed=${encodeURIComponent(finalSeed)}`;
   } catch (e) {
-    return 'https://api.dicebear.com/9.x/adventurer/svg?seed=Hero&backgroundColor=transparent';
+    return 'https://api.dicebear.com/7.x/adventurer/svg?seed=Hero';
   }
 }
 

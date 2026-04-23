@@ -178,4 +178,26 @@ function formatDate(dateString) {
   0% { filter: drop-shadow(0 0 2px rgba(245,158,11,0.5)); }
   100% { filter: drop-shadow(0 0 10px rgba(245,158,11,0.8)); }
 }
+@media (max-width: 500px) {
+  .badge-tile {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+    gap: 12px;
+  }
+  .badge-content {
+    width: 100%;
+  }
+  .badge-title {
+    white-space: normal;
+    font-size: 1rem;
+  }
+  .badge-meta {
+    text-align: center;
+    align-items: center;
+    width: 100%;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 10px;
+  }
+}
 </style>

@@ -56,6 +56,13 @@ public class DashboardService {
     this.achievementGenerator.seedGlobalAchievements();
   }
 
+  public int calculateLevel(int xp) {
+    if (xp <= 0) return 1;
+    // Formula: Level = floor(sqrt(XP / 1000)) + 1
+    // 0-999: Lvl 1, 1000-3999: Lvl 2, 4000-8999: Lvl 3, 9000-15999: Lvl 4
+    return (int) Math.floor(Math.sqrt((double) xp / 1000)) + 1;
+  }
+
   public void triggerAchievementGeneration(User user, int level) {
     achievementGenerator.generateForLevel(user, level);
   }
@@ -117,7 +124,10 @@ public class DashboardService {
     habitRepository.save(newHabit);
   }
 
-  public int calculateTotalXP(Long userId, int streak) {
+  /**
+   * Calculates the total XP for a user based on habit completions, goals, and achievements.
+   */
+  public int calculateTotalXP(Long userId) {
     List<Activity> completions = activityRepository.findByHabit_User_UserId(userId);
     int habitXP = completions.stream()
       .filter(a -> a.getCompletions() > 0)
@@ -149,8 +159,8 @@ public class DashboardService {
 
     User user = habit.getUser();
     int currentStreak = calculateCurrentStreak(getActivitiesByUser(user.getUserId()));
-    int xpBefore = calculateTotalXP(user.getUserId(), currentStreak);
-    int levelBefore = Math.max(1, (xpBefore / 2000) + 1);
+    int xpBefore = calculateTotalXP(user.getUserId());
+    int levelBefore = calculateLevel(xpBefore);
 
     Activity activity = activityRepository
       .findByHabit_IdAndDate(habitId, today)
@@ -165,8 +175,8 @@ public class DashboardService {
     activity.setCompletions(activity.getCompletions() > 0 ? 0 : 1);
     activityRepository.save(activity);
 
-    int xpAfter = calculateTotalXP(user.getUserId(), currentStreak);
-    int levelAfter = Math.max(1, (xpAfter / 2000) + 1);
+    int xpAfter = calculateTotalXP(user.getUserId());
+    int levelAfter = calculateLevel(xpAfter);
 
     if (levelAfter > levelBefore) {
       achievementGenerator.generateForLevel(user, levelAfter);
@@ -215,20 +225,21 @@ public class DashboardService {
       .orElse(null);
 
     if (db == null) {
-      return new DashboardDTO(0L, "Guest", null, 0, 0);
+      return new DashboardDTO(0L, "Guest", null, 0, 0, 0);
     }
 
     User user = db.getUser();
     List<ActivityDto> activities = getActivitiesByUser(user.getUserId());
     int streak = calculateCurrentStreak(activities);
-    int xp = calculateTotalXP(user.getUserId(), streak);
+    int xp = calculateTotalXP(user.getUserId());
     
-    int level = Math.max(1, (xp / 2000) + 1);
+    int level = calculateLevel(xp);
     achievementGenerator.generateForLevel(user, level);
 
     String avatar = (user.getProfile() != null) ? user.getProfile().getAvatar() : null;
+    int habitsDone = calculateTotalHabitsDone(activities);
 
-    return new DashboardDTO((long) db.getDashboardId(), user.getName(), avatar, streak, xp);
+    return new DashboardDTO((long) db.getDashboardId(), user.getName(), avatar, streak, xp, habitsDone);
   }
 
   @Transactional

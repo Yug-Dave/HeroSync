@@ -50,11 +50,11 @@ function short(s){ return s ? String(s).slice(0,10) : "—"; }
 
 <style scoped>
 .summary-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow);
 }
 
 .card-top {
@@ -65,35 +65,52 @@ function short(s){ return s ? String(s).slice(0,10) : "—"; }
 .title-group { display: flex; align-items: center; gap: 14px; }
 .title-icon {
   width: 44px; height: 44px; border-radius: 12px;
-  background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2);
-  display: flex; align-items: center; justify-content: center; color: var(--gold);
+  background: var(--card2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; color: var(--accent);
 }
 
-.card-title { margin: 0; font-family: var(--ff-head); font-size: 1.25rem; font-weight: 700; color: #fff; }
+.card-title { margin: 0; font-family: var(--ff-head); font-size: 1.4rem; font-weight: 700; color: var(--text); }
 .card-sub { margin: 4px 0 0; color: var(--muted); font-size: 0.9rem; font-weight: 500; }
 
 .date-range { display: flex; gap: 10px; }
 .range-badge {
   display: flex; align-items: center; gap: 8px;
   padding: 6px 14px; border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);
+  background: var(--card2); border: 1px solid var(--border);
 }
 .range-lbl { font-size: 0.7rem; text-transform: uppercase; color: var(--muted); font-weight: 700; letter-spacing: 0.5px; }
-.range-val { font-family: monospace; font-size: 0.9rem; color: #fff; font-weight: 600; }
+.range-val { font-family: monospace; font-size: 0.9rem; color: var(--text); font-weight: 600; }
 
 .stats-grid {
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
 }
-@media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } }
 
 .stat-item {
-  background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border);
-  border-radius: 16px; padding: 20px; transition: transform 0.2s;
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 20px; padding: 20px; transition: transform 0.2s;
 }
-.stat-item:hover { transform: translateY(-2px); border-color: var(--border2); }
+.stat-item:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: var(--shadow-lg); }
 
 .stat-label { font-size: 0.8rem; text-transform: uppercase; color: var(--muted); font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px; }
-.stat-value { font-family: var(--ff-head); font-size: 2.2rem; font-weight: 800; color: #fff; line-height: 1; }
+.stat-value { font-family: var(--ff-head); font-size: 2.2rem; font-weight: 800; color: var(--text); line-height: 1; }
 .stat-value.accent { color: var(--accent); }
 .stat-trend { margin-top: 10px; font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+
+@media (max-width: 600px) { 
+  .summary-card { padding: 16px; border-radius: 16px; }
+  .card-top { margin-bottom: 12px; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .title-icon { width: 32px; height: 32px; border-radius: 8px; }
+  .card-title { font-size: 1.1rem; }
+  .card-sub { font-size: 0.75rem; margin-top: 2px; }
+  .date-range { width: 100%; justify-content: space-between; gap: 6px; }
+  .range-badge { padding: 4px 8px; border-radius: 8px; flex: 1; justify-content: center; gap: 4px; }
+  .range-lbl { font-size: 0.55rem; }
+  .range-val { font-size: 0.7rem; }
+  
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; } 
+  .stat-item { padding: 12px; border-radius: 14px; }
+  .stat-label { font-size: 0.55rem; margin-bottom: 2px; }
+  .stat-value { font-size: 1.4rem; }
+  .stat-trend { font-size: 0.6rem; margin-top: 4px; line-height: 1.2; }
+}
 </style>
