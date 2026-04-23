@@ -33,3 +33,7 @@ temp/
 artifacts/
 Wiki/docs/*.png
 Wiki/docs/*.jpg
+
+# --- Custom Temp ---
+HeroSync/.temp_img_processing/
+.temp_img_processing/
