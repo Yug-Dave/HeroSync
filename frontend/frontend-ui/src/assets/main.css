@@ -4,6 +4,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
+  --hm-lvl1: #064e3b;
+  --hm-lvl1-border: #059669;
+  --hm-lvl2: #10b981;
+  --hm-lvl2-border: #10b981;
+  --hm-lvl3: var(--accent);
+  --hm-lvl3-border: var(--accent);
   /* ── Backgrounds ── */
   --bg: #0a0f1d;
   --bg2: #0f172a;
@@ -52,6 +58,12 @@
 }
 
 .theme-light {
+  --hm-lvl1: #eff6ff;
+  --hm-lvl1-border: #dbeafe;
+  --hm-lvl2: #93c5fd;
+  --hm-lvl2-border: #60a5fa;
+  --hm-lvl3: #3b82f6;
+  --hm-lvl3-border: #2563eb;
   --bg: #f8fafc;
   --bg2: #ffffff;
   --surface: #ffffff;
@@ -313,6 +325,12 @@ body {
 
 @media (max-width: 1024px) {
   :root {
+  --hm-lvl1: #064e3b;
+  --hm-lvl1-border: #059669;
+  --hm-lvl2: #10b981;
+  --hm-lvl2-border: #10b981;
+  --hm-lvl3: var(--accent);
+  --hm-lvl3-border: var(--accent);
     --radius-lg: 24px;
   }
   .container { padding: 20px 0; }
