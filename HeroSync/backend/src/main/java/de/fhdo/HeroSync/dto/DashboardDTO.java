@@ -6,13 +6,15 @@ public class DashboardDTO {
   private String avatar;
   private int currentStreak;
   private int totalXP;
+  private int totalHabitsDone;
 
-  public DashboardDTO(Long dashboardId, String userName, String avatar, int currentStreak, int totalXP) {
+  public DashboardDTO(Long dashboardId, String userName, String avatar, int currentStreak, int totalXP, int totalHabitsDone) {
     this.dashboardId = dashboardId;
     this.userName = userName;
     this.avatar = avatar;
     this.currentStreak = currentStreak;
     this.totalXP = totalXP;
+    this.totalHabitsDone = totalHabitsDone;
   }
 
   // Getters
@@ -21,6 +23,7 @@ public class DashboardDTO {
   public String getAvatar() { return avatar; }
   public int getCurrentStreak() { return currentStreak; }
   public int getTotalXP() { return totalXP; }
+  public int getTotalHabitsDone() { return totalHabitsDone; }
 
   @Override
   public String toString() {

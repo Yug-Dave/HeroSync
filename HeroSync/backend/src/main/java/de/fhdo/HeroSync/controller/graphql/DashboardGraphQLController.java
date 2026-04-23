@@ -33,10 +33,10 @@ public class DashboardGraphQLController {
     
     List<ActivityDto> activities = dashboardService.getActivitiesByUser(user.getUserId());
     int streak = dashboardService.calculateCurrentStreak(activities);
-    int totalXP = dashboardService.calculateTotalXP(user.getUserId(), streak);
+    int totalXP = dashboardService.calculateTotalXP(user.getUserId());
     String avatar = (user.getProfile() != null) ? user.getProfile().getAvatar() : null;
 
-    return new DashboardDTO(user.getUserId(), user.getName(), avatar, streak, totalXP);
+    return new DashboardDTO(user.getUserId(), user.getName(), avatar, streak, totalXP, 0);
   }
 
   @QueryMapping

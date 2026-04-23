@@ -54,7 +54,9 @@ public class AchievementRestController {
     return achievementService.listUnlocked(user);
   }
 
-  // for manual evaluate for debugging (same user)
+  /**
+   * Manually triggers achievement evaluation for the current user.
+   */
   @PostMapping("/evaluate")
   public List<UnlockedAchievementDto> evaluateAchievements(Authentication auth) {
     var user = requireCurrentUser(auth);

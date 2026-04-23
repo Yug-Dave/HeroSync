@@ -1,13 +1,14 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { http } from '../api/http';
 import { getAvatarImageUrl } from '../utils/avatar';
+import { useUserStore } from '../stores/user';
 
 const props = defineProps({ sidebarOpen: Boolean });
 const emit  = defineEmits(['toggleSidebar']);
 
+const userStore = useUserStore();
 const showLogoutModal = ref(false);
-const user = ref({ name: 'Hero', avatar: '' });
 
 /** Calls the Spring Security logout endpoint, then redirects to the landing page. */
 const confirmLogout = async () => {
@@ -16,25 +17,10 @@ const confirmLogout = async () => {
   finally { window.location.href = '/'; }
 };
 
-/** Fetches the current user's name and avatar for the header display. */
-const fetchUser = async () => {
-  try {
-    const res = await fetch('/dashboard', { headers: { Accept: 'application/json' }, credentials: 'include' });
-    if (res.ok) {
-      const d = await res.json();
-      user.value.name   = d.userName || 'Hero';
-      user.value.avatar = d.avatar   || '';
-    }
-  } catch { /* silently ignore */ }
-};
-
 onMounted(async () => {
-  await fetchUser();
-  window.addEventListener('profile-updated', fetchUser);
-});
-
-onUnmounted(() => {
-  window.removeEventListener('profile-updated', fetchUser);
+  if (!userStore.initialized) {
+    await userStore.fetchUser();
+  }
 });
 </script>
 
@@ -57,8 +43,8 @@ onUnmounted(() => {
       </router-link>
 
       <div class="header-actions">
-        <div class="header-user" v-if="user.avatar">
-          <img :src="getAvatarImageUrl(user.avatar)" class="header-avatar" alt="User Avatar" />
+        <div class="header-user" v-if="userStore.avatar">
+          <img :src="getAvatarImageUrl(userStore.avatar)" class="header-avatar" alt="User Avatar" />
         </div>
         <button class="icon-btn" title="Logout" @click="showLogoutModal = true">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -97,7 +83,7 @@ onUnmounted(() => {
 <style scoped>
 .header {
   height: var(--header-h);
-  background: rgba(7, 10, 16, 0.9);
+  background: var(--card);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 100;

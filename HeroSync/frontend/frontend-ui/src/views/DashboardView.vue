@@ -253,65 +253,95 @@ onMounted(() => {
     <main class="main">
       <section class="section">
         <div class="container">
-          <CharacterCard 
-            :name="user.name"
-            :level="level"
-            :xp="xp"
-            :streak="user.streak"
-            :avatarSeed="user.avatar"
-            size="lg"
-            style="margin-bottom: 20px;"
-          >
-            <div class="hero-stats">
-              <div class="hstat">
-                <div class="hval">{{ completedCount }}/{{ totalHabits }}</div>
-                <div class="hlbl">Quests Done</div>
-              </div>
-            </div>
-          </CharacterCard>
-
-          <div class="stat-row">
-            <div class="stat-card" style="display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 16px;">
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <div class="stat-icon fire-icon" style="margin-bottom:0; width: 30px; height: 30px; flex-shrink: 0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s-6 5.5-6 10a6 6 0 0012 0C18 7.5 12 2 12 2zm0 14a2 2 0 01-2-2c0-2 2-4.5 2-4.5s2 2.5 2 4.5a2 2 0 01-2 2z"/></svg></div>
-                <div style="display: flex; align-items: baseline; gap: 6px;">
-                  <div class="sv" style="font-size: 1.5rem; line-height: 1;">{{ user.streak }}</div>
-                  <div class="sl">Streak</div>
+          
+          <!-- Top Hero & Stats Section -->
+          <div class="dashboard-top-section">
+            <div class="char-column">
+              <CharacterCard 
+                :name="user.name"
+                :level="level"
+                :xp="xp"
+                :streak="user.streak"
+                :avatarSeed="user.avatar"
+                size="lg"
+              >
+                <div class="hero-stats">
+                  <div class="hstat">
+                    <div class="hval">{{ completedCount }}/{{ totalHabits }}</div>
+                    <div class="hlbl">Quests Done</div>
+                  </div>
                 </div>
-              </div>
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <div class="stat-icon xp-icon" style="margin-bottom:0; width: 30px; height: 30px; flex-shrink: 0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-                <div style="display: flex; align-items: baseline; gap: 6px;">
-                  <div class="sh accent" style="font-size: 1.2rem; margin-top: 0; line-height: 1;">{{ xp.toLocaleString() }}</div>
-                  <div class="sl">Total XP</div>
+              </CharacterCard>
+
+              <!-- AI Companion Banner -->
+              <div class="ai-companion-banner card mini">
+                <div class="mascot-svg-wrap">
+                  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="25" y="40" width="50" height="40" rx="12" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-width="2"/>
+                    <rect x="30" y="15" width="40" height="30" rx="10" fill="var(--bg2)" stroke="var(--accent)" stroke-width="2.5"/>
+                    <rect x="35" y="20" width="30" height="20" rx="6" fill="#1e293b"/>
+                    <circle cx="43" cy="30" r="2.5" fill="var(--accent)"><animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite" /></circle>
+                    <circle cx="57" cy="30" r="2.5" fill="var(--accent)"><animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite" /></circle>
+                    <line x1="50" y1="15" x2="50" y2="8" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="6" r="3" fill="var(--accent)"/>
+                    <circle cx="20" cy="60" r="6" fill="var(--bg2)" stroke="var(--accent)" stroke-width="1.5" /><circle cx="80" cy="60" r="6" fill="var(--bg2)" stroke="var(--accent)" stroke-width="1.5" />
+                    <ellipse cx="50" cy="92" rx="20" ry="4" fill="rgba(0,0,0,0.1)"><animate attributeName="rx" values="20;15;20" dur="4s" repeatCount="indefinite" /><animate attributeName="opacity" values="0.1;0.05;0.1" dur="4s" repeatCount="indefinite" /></ellipse>
+                  </svg>
                 </div>
+                <div class="ai-message">
+                  <h3>Hero Mode AI</h3>
+                  <p>"Greetings, Hero! Consistency is the path to legendary status. Shall we tackle a new quest?"</p>
+                </div>
+                <button class="deploy-btn">Deploy Quest</button>
               </div>
             </div>
 
-            <div class="stat-card">
-              <div class="stat-icon check-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-              <div class="sv">{{ user.totalDone }}%</div><div class="sl">Done Today</div>
-              <div class="mini-bar" role="progressbar" :aria-valuenow="user.totalDone" aria-valuemin="0" aria-valuemax="100"><div class="mini-fill" :style="{ width: user.totalDone + '%' }" /></div>
-            </div>
+            <div class="stats-column">
+              <div class="stat-grid-mini">
+                <div class="stat-card" style="display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 16px;">
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="stat-icon fire-icon" style="margin-bottom:0; width: 30px; height: 30px; flex-shrink: 0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s-6 5.5-6 10a6 6 0 0012 0C18 7.5 12 2 12 2zm0 14a2 2 0 01-2-2c0-2 2-4.5 2-4.5s2 2.5 2 4.5a2 2 0 01-2 2z"/></svg></div>
+                    <div style="display: flex; align-items: baseline; gap: 6px;">
+                      <div class="sv" style="font-size: 1.5rem; line-height: 1;">{{ user.streak }}</div>
+                      <div class="sl">Streak</div>
+                    </div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="stat-icon xp-icon" style="margin-bottom:0; width: 30px; height: 30px; flex-shrink: 0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+                    <div style="display: flex; align-items: baseline; gap: 6px;">
+                      <div class="sh accent" style="font-size: 1.2rem; margin-top: 0; line-height: 1;">{{ xp.toLocaleString() }}</div>
+                      <div class="sl">Total XP</div>
+                    </div>
+                  </div>
+                </div>
 
-            <div class="stat-card">
-              <div class="stat-icon" style="background: rgba(255,215,0,0.1); color: var(--gold);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2"/></svg></div>
-              <div class="sv">{{ goals.filter(g => g.status === 'ACTIVE').length }}</div><div class="sl">Active Missions</div>
-              <div class="sh accent" @click="router.push('/goals')" style="cursor:pointer">View All →</div>
-            </div>
-            <div class="stat-card hm-card">
-              <div class="hm-header"><span class="sl">Consistency</span><span class="hm-sub">Last 10 days</span></div>
-              <div class="hm-grid">
-                <div v-for="day in heatmap" :key="day.date" class="day-box"
-                  :class="{ lvl1: day.totalCompletions>0 && day.totalCompletions<3, lvl2: day.totalCompletions>=3 && day.totalCompletions<6, lvl3: day.totalCompletions>=6 }"
-                  :title="`${day.date}: ${day.totalCompletions}`">
-                  <span class="dd">{{ formatDate(day.date).day }}</span>
-                  <span class="mm">{{ formatDate(day.date).mon }}</span>
+                <div class="stat-card">
+                  <div class="stat-icon check-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="sv">{{ user.totalDone }}%</div><div class="sl">Done Today</div>
+                  <div class="mini-bar" role="progressbar" :aria-valuenow="user.totalDone" aria-valuemin="0" aria-valuemax="100"><div class="mini-fill" :style="{ width: user.totalDone + '%' }" /></div>
+                </div>
+
+                <div class="stat-card">
+                  <div class="stat-icon" style="background: rgba(255,215,0,0.1); color: var(--gold);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2"/></svg></div>
+                  <div class="sv">{{ goals.filter(g => g.status === 'ACTIVE').length }}</div><div class="sl">Active Missions</div>
+                  <div class="sh accent" @click="router.push('/goals')" style="cursor:pointer">View All →</div>
+                </div>
+
+                <div class="stat-card hm-card">
+                  <div class="hm-header"><span class="sl">Consistency</span><span class="hm-sub">Last 10 days</span></div>
+                  <div class="hm-grid">
+                    <div v-for="day in heatmap" :key="day.date" class="day-box"
+                      :class="{ lvl1: day.totalCompletions>0 && day.totalCompletions<3, lvl2: day.totalCompletions>=3 && day.totalCompletions<6, lvl3: day.totalCompletions>=6 }"
+                      :title="`${day.date}: ${day.totalCompletions}`">
+                      <span class="dd">{{ formatDate(day.date).day }}</span>
+                      <span class="mm">{{ formatDate(day.date).mon }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
+          <!-- Bottom Main Grid -->
           <div class="grid">
             <div class="card span-4">
               <div class="card-inner">
@@ -321,7 +351,10 @@ onMounted(() => {
                     Active Quests <span class="count-pill">{{ completedCount }}/{{ totalHabits }}</span>
                   </div>
                   <div class="sec-actions">
-                    <button class="btn-sm" aria-label="Add New Quest" @click="openCreateModal">+ Quest</button>
+                    <button class="btn-sm" aria-label="Add New Quest" @click="openCreateModal">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Quest
+                    </button>
                     <button class="btn-sm ghost" aria-label="Manage All Quests" @click="router.push('/habits')">Manage</button>
                   </div>
                 </div>
@@ -374,7 +407,7 @@ onMounted(() => {
             </div>
 
             <div class="card span-4">
-              <div class="card-inner">
+              <div class="card-inner no-scroll">
                 <div class="section-head mb-16">
                   <div class="sec-title">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4a2 2 0 01-2-2V5h4"/><path d="M18 9h2a2 2 0 002-2V5h-4"/><path d="M6 5h12v8a6 6 0 01-12 0V5z"/></svg>
@@ -382,8 +415,8 @@ onMounted(() => {
                   </div>
                   <router-link to="/achievements" class="btn-sm ghost">See All</router-link>
                 </div>
-                <div class="scroll-area">
-                  <div class="vertical-stack"><DashboardAchievementsPanel ref="achievementsRef" /></div>
+                <div class="achievements-full-wrap">
+                  <DashboardAchievementsPanel ref="achievementsRef" />
                 </div>
               </div>
             </div>
@@ -391,16 +424,20 @@ onMounted(() => {
 
           <div class="quick-actions">
             <button class="qa-btn primary-qa" aria-label="Create New Quest" @click="openCreateModal">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Quest
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New Quest
             </button>
             <button class="qa-btn" aria-label="Create New Goal" @click="openCreateGoalModal">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2"/></svg>New Goal
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2"/></svg>
+              New Goal
             </button>
             <router-link to="/achievements" class="qa-btn" aria-label="View Achievements and Badges">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4a2 2 0 01-2-2V5h4"/><path d="M6 5h12v8a6 6 0 01-12 0V5z"/></svg>Badges
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4a2 2 0 01-2-2V5h4"/><path d="M6 5h12v8a6 6 0 01-12 0V5z"/></svg>
+              Badges
             </router-link>
             <router-link to="/reports/weekly" class="qa-btn" aria-label="View Weekly Progress Report">
-              <span>Report</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 118 2.83M22 12A10 10 0 0012 2v10z"/></svg>
+              Report
             </router-link>
           </div>
 
@@ -414,10 +451,32 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* ── Box Height Sync & Scrolling ── */
+/* ── Layout ── */
+.dashboard-wrapper { width: 100%; }
+.container { width: min(1200px, 95vw); margin: 0 auto; padding: 20px 0; }
+
+.dashboard-top-section {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+  align-items: stretch;
+}
+.char-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.stats-column {
+  width: 520px;
+  flex-shrink: 0;
+}
+
+/* ── Card Heights & Scrolling ── */
 .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
 .grid .card { 
-  height: 400px; /* SYNCED HEIGHT */
+  height: 480px; 
   display: flex; 
   flex-direction: column; 
 }
@@ -428,6 +487,8 @@ onMounted(() => {
   padding: 20px; 
   overflow: hidden; 
 }
+.card-inner.no-scroll { overflow: visible; }
+
 .scroll-area { 
   flex: 1; 
   overflow-y: auto; 
@@ -437,11 +498,21 @@ onMounted(() => {
 .scroll-area::-webkit-scrollbar { width: 5px; }
 .scroll-area::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
-/* ── Stat Cards ── */
-.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
-@media (max-width: 1024px) { .stat-row { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 600px)  { .stat-row { grid-template-columns: 1fr; } }
+.achievements-full-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
 
+/* ── Stat Cards ── */
+.stat-grid-mini {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 16px;
+  height: 100%;
+}
 .stat-card {
   background: linear-gradient(160deg, var(--card), var(--bg2));
   border: 1px solid var(--border); border-radius: 14px; padding: 16px;
@@ -456,17 +527,12 @@ onMounted(() => {
 .sl   { font-size: .72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
 .sh   { font-size: .75rem; font-weight: 700; margin-top: 2px; }
 .sh.accent { color: var(--accent); }
-.xp-mini { background: rgba(0,229,160,.08); border: 1px solid rgba(0,229,160,.18); color: var(--accent); border-radius: 6px; padding: 2px 6px; font-size: .68rem; font-weight: 700; white-space: nowrap; }
-.xp-mini.missed { color: var(--muted); border-color: var(--border); background: transparent; }
-.mini-bar  { height: 5px; background: rgba(255,255,255,.07); border-radius: 3px; overflow: hidden; margin-top: 4px; }
-.mini-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 3px; transition: width .4s; }
 
-
-/* ── Heatmap (ORIGINAL STYLE) ── */
+/* ── Heatmap ── */
 .hm-card { padding: 16px; }
 .hm-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .hm-sub  { font-size: .7rem; color: var(--muted); font-weight: 600; }
-.hm-grid { display: flex; gap: 5px; flex-wrap: wrap; }
+.hm-grid { display: flex; gap: 5px; flex-wrap: wrap; flex: 1; align-items: center; justify-content: center; }
 .day-box { width: 34px; height: 34px; border-radius: 7px; background: rgba(255,255,255,.04); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform .15s; }
 .day-box:hover { transform: scale(1.1); }
 .day-box .dd { font-size: 10px; font-weight: 700; color: var(--text); line-height: 1; }
@@ -474,19 +540,115 @@ onMounted(() => {
 .day-box.lvl1 { background: #064e3b; border-color: #059669; }
 .day-box.lvl2 { background: #10b981; border-color: #10b981; }
 .day-box.lvl3 { background: var(--accent); border-color: var(--accent); }
-.day-box.lvl3 .dd, .day-box.lvl3 .mm { color: #062015; }
 
-/* ── Quest Buttons (ORIGINAL STYLE) ── */
-.btn-sm { padding: 5px 12px; border-radius: 8px; border: 1px solid var(--border2); background: rgba(255,255,255,.04); color: var(--text); font-family: var(--ff-body); font-size: .8rem; font-weight: 700; cursor: pointer; transition: all .15s; text-decoration: none; display: inline-flex; align-items: center; }
-.btn-sm:hover { background: rgba(255,255,255,.08); border-color: var(--accent); color: var(--accent); }
-.btn-sm.ghost { background: transparent; border-color: transparent; }
-.btn-sm.ghost:hover { background: rgba(255,255,255,.05); border-color: var(--border); }
+/* ── AI Companion ── */
+.ai-companion-banner.mini {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.ai-companion-banner.mini .mascot-svg-wrap {
+  width: 70px; height: 70px; flex-shrink: 0;
+}
+.ai-companion-banner.mini .ai-message h3 {
+  margin: 0 0 4px; font-family: var(--ff-head); font-size: 1rem; color: var(--accent); font-weight: 800;
+}
+.ai-companion-banner.mini .ai-message p {
+  margin: 0; color: var(--text-dim); font-size: 0.8rem; line-height: 1.4;
+}
 
-/* ── Rest of Original UI ── */
-.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
-.stat-card { background: linear-gradient(160deg, var(--card), var(--bg2)); border: 1px solid var(--border); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 4px; }
-.sv { font-family: var(--ff-head); font-size: 1.7rem; font-weight: 700; color: var(--text); line-height: 1; }
-.sl { font-size: .72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+/* ── Button Styles ── */
+.btn-sm { 
+  padding: 8px 14px; 
+  border-radius: 10px; 
+  border: 1px solid rgba(255,255,255,0.08); 
+  background: rgba(255,255,255,0.04); 
+  color: var(--text); 
+  font-family: var(--ff-body); 
+  font-size: 0.75rem; 
+  font-weight: 700; 
+  cursor: pointer; 
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+  display: inline-flex; 
+  align-items: center;
+  gap: 6px;
+}
+.btn-sm:hover { 
+  background: rgba(255,255,255,0.08); 
+  border-color: var(--accent); 
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+.btn-sm.ghost { background: transparent; border-color: transparent; opacity: 0.7; }
+.btn-sm.ghost:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); opacity: 1; }
+
+.deploy-btn {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #000; border: none; padding: 10px 24px; border-radius: 12px;
+  font-family: var(--ff-head); font-weight: 800; cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 15px rgba(0, 229, 160, 0.3);
+  font-size: 0.9rem;
+  flex: 0 0 auto;
+}
+.deploy-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 229, 160, 0.4); }
+
+.quick-actions { 
+  display: flex; 
+  gap: 16px; 
+  margin-top: 24px; 
+  flex-wrap: wrap; 
+}
+.qa-btn { 
+  flex: 1; 
+  min-width: 120px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 10px; 
+  padding: 15px; 
+  border-radius: 14px; 
+  background: rgba(255,255,255,0.03); 
+  border: 1px solid rgba(255,255,255,0.06); 
+  color: var(--text-dim); 
+  font-weight: 700; 
+  font-size: 0.9rem;
+  text-decoration: none; 
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.qa-btn:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.15);
+  color: var(--text);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+.qa-btn.primary-qa { 
+  background: rgba(0, 229, 160, 0.05); 
+  border-color: rgba(0, 229, 160, 0.15); 
+  color: var(--accent); 
+}
+.qa-btn.primary-qa:hover {
+  background: rgba(0, 229, 160, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 10px 20px rgba(0, 229, 160, 0.1);
+}
+
+/* ── Tables & Lists ── */
+.table { width: 100%; border-collapse: collapse; }
+.table th { text-align: left; font-size: .75rem; color: var(--muted); padding-bottom: 8px; }
+.table td { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: .85rem; }
+.status-done { color: var(--accent); font-weight: 700; }
+.status-miss { color: var(--danger); font-weight: 700; }
+.xp-mini { background: rgba(0,229,160,.08); border: 1px solid rgba(0,229,160,.18); color: var(--accent); border-radius: 6px; padding: 2px 6px; font-size: .68rem; font-weight: 700; }
+
 .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-shrink: 0; }
 .sec-title { display: flex; align-items: center; gap: 8px; font-family: var(--ff-head); font-size: 1rem; font-weight: 700; color: var(--text); }
 .count-pill { background: rgba(0,229,160,.1); border: 1px solid rgba(0,229,160,.22); color: var(--accent); border-radius: 20px; padding: 1px 8px; font-size: .72rem; font-weight: 800; }
@@ -494,71 +656,113 @@ onMounted(() => {
 .quest-row { display: flex; align-items: center; gap: 10px; padding: 11px 14px; background: rgba(255,255,255,.02); border: 1px solid var(--border); border-radius: 10px; }
 .quest-row.done { opacity: .55; }
 
-/* 1. The container */
-.q-check-wrap {
-  flex-shrink: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  width: 20px;
-  height: 20px;
-  outline: none; /* Kill focus ring on the label */
-  -webkit-tap-highlight-color: transparent; /* Kill mobile tap blue box */
-}
-
-/* 2. The hidden input */
-.q-checkbox {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-  appearance: none;
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* 3. The Custom Circle */
-.q-mark {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  color: #062015;
-  background: transparent;
-  box-shadow: none !important; /* Ensure no glow */
-  outline: none !important;    /* Ensure no focus ring */
-}
-
-/* 4. Ensure focus state on the hidden input doesn't show on the circle */
-.q-checkbox:focus + .q-mark,
-.q-checkbox:active + .q-mark {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-/* 5. The checked state */
-.q-checkbox:checked + .q-mark {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-
+.q-check-wrap { flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; width: 20px; height: 20px; }
+.q-checkbox { position: absolute; opacity: 0; width: 0; height: 0; }
+.q-mark { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+.q-checkbox:checked + .q-mark { background: var(--accent); border-color: var(--accent); }
 .q-rarity { width: 3px; height: 32px; border-radius: 2px; }
 .q-xp { background: rgba(0,229,160,.08); border: 1px solid rgba(0,229,160,.18); color: var(--accent); border-radius: 8px; padding: 2px 8px; font-size: .72rem; font-weight: 700; }
-.table { width: 100%; border-collapse: collapse; }
-.table th { text-align: left; font-size: .75rem; color: var(--muted); padding-bottom: 8px; }
-.table td { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: .85rem; }
-.status-done { color: var(--accent); font-weight: 700; }
-.status-miss { color: var(--danger); font-weight: 700; }
-.quick-actions { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
-.qa-btn { flex: 1; min-width: 110px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 13px; border-radius: 12px; background: rgba(255,255,255,.03); border: 1px solid var(--border); color: var(--text); font-weight: 600; text-decoration: none; }
-.qa-btn.primary-qa { background: linear-gradient(135deg, rgba(0,229,160,.14), rgba(59,130,246,.09)); border-color: rgba(0,229,160,.28); color: var(--accent); }
-.xp-toast { position: fixed; top: 80px; right: 20px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #040d09; font-weight: 800; padding: 10px 20px; border-radius: 12px; z-index: 999; }
-@media (max-width: 768px) { .section-head { flex-direction: column; align-items: flex-start; gap: 12px; } .sec-actions { width: 100%; display: flex; justify-content: flex-start; gap: 8px; } }
-@media (max-width: 1024px) { .stat-row { grid-template-columns: 1fr 1fr !important; } .grid .span-4 { grid-column: span 12 !important; } } @media (max-width: 768px) { .stat-row { grid-template-columns: 1fr !important; } .hm-grid { justify-content: center; } .grid .card { height: auto !important; min-height: 400px; } }
+
+.mini-bar { height: 5px; background: rgba(255,255,255,.07); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+.mini-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 3px; transition: width .4s; }
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .dashboard-top-section { flex-direction: column; }
+  .stats-column { width: 100%; }
+}
+
+@media (max-width: 1024px) { 
+  .grid .span-4 { grid-column: span 12 !important; } 
+} 
+
+@media (max-width: 768px) {
+  .dashboard-top-section { gap: 16px; }
+  
+  .ai-companion-banner.mini {
+    flex-direction: row !important;
+    text-align: left !important;
+    padding: 16px !important;
+    gap: 16px !important;
+    flex-wrap: wrap;
+    align-items: center;
+    border-radius: 20px !important;
+  }
+  .ai-companion-banner.mini .mascot-svg-wrap { 
+    width: 64px !important; 
+    height: 64px !important; 
+    flex-shrink: 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    padding: 8px;
+  }
+  .ai-companion-banner.mini .ai-message {
+    flex: 1;
+    min-width: 140px;
+  }
+  .ai-companion-banner.mini .ai-message h3 { 
+    font-size: 0.95rem !important; 
+    color: var(--accent) !important;
+    margin-bottom: 2px !important;
+  }
+  .ai-companion-banner.mini .ai-message p { 
+    font-size: 0.75rem !important; 
+    line-height: 1.3 !important;
+    color: var(--text-dim) !important;
+  }
+  .deploy-btn { 
+    width: 100% !important; 
+    margin-top: 4px !important;
+    padding: 10px !important;
+    font-size: 0.8rem !important;
+    border-radius: 12px !important;
+    background: rgba(0, 229, 160, 0.05) !important;
+    border: 1px solid rgba(0, 229, 160, 0.15) !important;
+    color: var(--accent) !important;
+    box-shadow: none !important;
+    height: auto !important;
+  }
+
+  /* Horizontal Scrolling Stats on Mobile */
+  .stat-grid-mini {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto;
+    gap: 16px;
+    padding-bottom: 12px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .stat-grid-mini::-webkit-scrollbar { display: none; }
+  .stat-grid-mini .stat-card {
+    flex: 0 0 240px;
+    scroll-snap-align: center;
+    height: auto;
+  }
+
+  .grid .card { 
+    height: auto !important; 
+    min-height: 420px !important;
+    border-radius: 24px;
+  }
+  .scroll-area { max-height: 400px; }
+
+  .quick-actions { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 12px; 
+    margin-top: 10px;
+  }
+  .qa-btn { padding: 14px; font-size: 0.85rem; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes floatAvatar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
 </style>

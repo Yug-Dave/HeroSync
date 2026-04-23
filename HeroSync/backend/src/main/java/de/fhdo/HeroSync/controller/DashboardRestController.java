@@ -42,13 +42,13 @@ public class DashboardRestController {
     String avatar = (user.getProfile() != null) ? user.getProfile().getAvatar() : null;
     List<ActivityDto> activities = dashboardService.getActivitiesByUser(user.getUserId());
     int streak   = dashboardService.calculateCurrentStreak(activities);
-    int totalXP  = dashboardService.calculateTotalXP(user.getUserId(), streak);
+    int totalXP  = dashboardService.calculateTotalXP(user.getUserId());
 
     // Trigger dynamic achievement generation
     int level = Math.max(1, (totalXP / 2000) + 1);
     dashboardService.triggerAchievementGeneration(user, level);
 
-    return ResponseEntity.ok(new DashboardDTO(user.getUserId(), user.getName(), avatar, streak, totalXP));
+    return ResponseEntity.ok(new DashboardDTO(user.getUserId(), user.getName(), avatar, streak, totalXP, 0));
   }
 
   /**
