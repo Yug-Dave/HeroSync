@@ -6,20 +6,20 @@
 
 HeroSync is a **Full-Stack Gamification Ecosystem** designed to bridge the gap between real-world productivity and RPG engagement. Built with a robust **Spring Boot 3** backend and a reactive **Vue 3** frontend, HeroSync transforms daily habits into epic quests and challenges.
 
+<p align="center">
+  <img width="700" alt="HeroSync Dashboard Banner" src="./assets/hero-banner.png" />
+</p>
+
 ## ✦ Overview
 HeroSync allows users to track their habits, set ambitious goals, and face "Boss Battles" that represent their most significant challenges. By completing tasks, users earn Experience Points (XP), level up their hero, and unlock achievements that celebrate their consistency.
 
-<p align="center">
-  <img width="700" alt="image" src="https://github.com/user-attachments/assets/51a6c035-4c02-4462-9df5-1071e374bcdb" />
-</p>
-
-
 ## ⚡ Key Features
-- **Dynamic Habit Tracking**: Monitor your daily routines with interactive heatmaps and progress bars.
+- **Universal Theme Engine**: Seamless toggle between **Cinema Dark** and **Crystal Light** modes with persistent state management.
+- **Dynamic Habit Tracking**: Monitor your daily routines with interactive heatmaps, progress bars, and real-time XP bursts.
 - **Goal System & Boss Battles**: Set goals linked to habits. Mark high-priority goals as "Bosses" for greater rewards and a more challenging visual experience.
 - **Achievement Vault**: Unlock unique badges based on your performance, streaks, and milestones.
 - **Hero Profile**: Customize your 3D avatar (via Avaturn) and watch your hero grow as you gain XP.
-- **Deep Analytics**: Weekly and monthly reports provide insights into your productivity patterns.
+- **Production-Ready Docker Pipeline**: Pre-configured Nginx reverse proxy and containerized microservices for instant, secure VPS deployment.
 
 ## ⚙ Tech Stack
 
@@ -29,14 +29,14 @@ HeroSync allows users to track their habits, set ambitious goals, and face "Boss
 | **Backend** | ![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat-square&logo=springboot&logoColor=white) ![GraphQL](https://img.shields.io/badge/GraphQL-E10098?style=flat-square&logo=graphql&logoColor=white) ![Java](https://img.shields.io/badge/Java_21-007396?style=flat-square&logo=openjdk&logoColor=white) |
 | **Database** | ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white) ![H2](https://img.shields.io/badge/H2-004088?style=flat-square) |
 | **Security** | ![Spring Security](https://img.shields.io/badge/Spring_Security-6DB33F?style=flat-square&logo=springsecurity&logoColor=white) ![BCrypt](https://img.shields.io/badge/BCrypt-Gray?style=flat-square) |
-| **Design** | ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white) ![Glassmorphism](https://img.shields.io/badge/Glassmorphism-00e5a0?style=flat-square) |
+| **DevOps** | ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white) ![Nginx](https://img.shields.io/badge/Nginx-009639?style=flat-square&logo=nginx&logoColor=white) |
 
 ## 💠 Architecture
 HeroSync follows a **Modular Monolith** pattern with a clean separation of concerns:
 - **GraphQL Engine**: For complex, nested data retrieval (Dashboard, Reports).
 - **RESTful API**: For standard operations and authentication.
 - **Service Layer**: Centralized business logic (XP calculation, Achievement unlocking).
-- **Security**: Robust session management and CSRF protection.
+- **Reverse Proxy**: Nginx handles SSL termination and API routing to prevent CORS issues.
 
 ```mermaid
 graph TD
@@ -44,9 +44,13 @@ graph TD
         UI[Tactical Dashboard] --> Store[State Management]
     end
 
+    subgraph ReverseProxy [Nginx]
+        Store -- /api --> Proxy[API Gateway]
+    end
+
     subgraph Backend [Spring Boot 3]
-        Store -- API --> GQL[GraphQL Engine]
-        Store -- API --> REST[REST Controllers]
+        Proxy --> GQL[GraphQL Engine]
+        Proxy --> REST[REST Controllers]
         GQL --> Service[Service Layer]
         REST --> Service
         Service --> Repo[JPA Repository]
@@ -57,38 +61,32 @@ graph TD
     end
 ```
 
-## ⎆ Getting Started
+## 🚀 Quick Start (Recommended)
+The fastest way to get HeroSync running is using **Docker**. You don't need to install Java, Node, or MySQL on your host machine.
 
-### Prerequisites
-- **Java 21** or higher
-- **Node.js 18** or higher
+1. Clone the repo.
+2. Run:
+   ```bash
+   docker compose up -d
+   ```
+3. Access the dashboard at `http://localhost:80`.
+
+## 🛠️ Manual Development Setup
+If you want to modify the code and see changes in real-time without Docker:
+
+#### Prerequisites
+- **Java 21**+
+- **Node.js 18**+
 - **MySQL 8.0**
-- **Docker** (Optional, for easy database setup)
 
-### Backend Setup
-1. Navigate to `HeroSync/backend`.
-2. Configure your database in `src/main/resources/application.yaml` or set environment variables:
-   - `DB_USERNAME`: your_username
-   - `DB_PASSWORD`: your_password
-3. Run the application:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-
-### Frontend Setup
-1. Navigate to `HeroSync/frontend/frontend-ui`.
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Run the development server:
-   ```bash
-   npm run dev
-   ```
-4. Access the app at `http://localhost:5173`.
+#### Local Development
+1. **Backend**: Navigate to `HeroSync/backend` and run `./mvnw spring-boot:run`.
+2. **Frontend**: Navigate to `HeroSync/frontend/frontend-ui`, run `npm install` then `npm run dev`.
+3. **Access**: `http://localhost:5173`.
 
 ## ⎔ Documentation
 Detailed documentation, including the [UML Class Diagram](./Wiki/docs/UML-Class-diagram.md) and [Assignment Breakdown](./Wiki/docs/Assignment-Breakdown.md), can be found in the `/Wiki` directory.
 
 ---
 *Developed with a focus on Performance, Professional Integrity, and Epic Engagement.*
+
