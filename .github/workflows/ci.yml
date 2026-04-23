@@ -2,9 +2,9 @@ name: HeroSync Unified CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, productioncode ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, productioncode ]
 
 jobs:
   # --- 1. Backend Build ---
@@ -21,12 +21,12 @@ jobs:
           cache: maven
           
       - name: Debug - List Files
-        run: ls -R HeroSync/backend
+        run: ls -R backend
           
       - name: Maven Build
         # We skip tests here to ensure the build succeeds, then run them in a separate step
         run: mvn -B clean package -DskipTests
-        working-directory: HeroSync/backend
+        working-directory: backend
 
   # --- 2. Frontend Build ---
   frontend-workflow:
@@ -41,13 +41,13 @@ jobs:
           # We remove the specific cache path to let GitHub detect it automatically
           
       - name: Debug - List Files
-        run: ls -R HeroSync/frontend/frontend-ui
+        run: ls -R frontend/frontend-ui
         
       - name: Install dependencies
         # Using npm install instead of ci for better compatibility across environments
         run: npm install
-        working-directory: HeroSync/frontend/frontend-ui
+        working-directory: frontend/frontend-ui
         
       - name: Build Frontend
         run: npm run build
-        working-directory: HeroSync/frontend/frontend-ui
+        working-directory: frontend/frontend-ui
