@@ -43,7 +43,7 @@ It connects to a **Spring Boot** backend and a **MySQL** database to track habit
 
 Before running this frontend, you must ensure the backend environment is ready:
 
-1.  **Node.js:** (v22.19.x or higher) - [Download Here](https://nodejs.org/)
+1.  **Node.js:** (v20.19+ or v22.12+) - [Download Here](https://nodejs.org/)
 2.  **MySQL Server:** Must be installed and running.
   * Database Name: `HeroSync_db`
   * Port: `3306`
@@ -58,7 +58,7 @@ Before running this frontend, you must ensure the backend environment is ready:
 1.  **Clone the repository:**
     ```sh
     git clone <https://github.com/FrankV17/web2-ws25-GlitchGang.git>
-    cd HeroSync/frontend/vue-HeroSync
+    cd frontend/frontend-ui
     ```
 
 2.  **Install Dependencies:**
@@ -77,10 +77,10 @@ Before running this frontend, you must ensure the backend environment is ready:
 4.  Verify it is listening on port `8080`.
 
 ### Step 2: Start the Frontend
-In your terminal (inside the `HeroSync/frontend/vue-HeroSync` directory), run:
+In your terminal (inside the `frontend/frontend-ui` directory), run:
 
 ```sh
-npm run build
+npm run dev
 ```
 
 ### Step 3: Access the App
@@ -94,10 +94,8 @@ Open your browser and navigate to:
 Key files and folders in the application:
 
 ```text
-HeroSync/
-└── frontend/
-    └── vue-HeroSync/
-        ├── src/
+frontend-ui/
+└── src/
         │   ├── api/                                        # API connection logic
         │   ├── assets/                                     # Global styles and static resources
         │   ├── components/                                 # Reusable UI components
