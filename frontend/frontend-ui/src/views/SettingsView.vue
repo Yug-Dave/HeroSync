@@ -4,6 +4,7 @@ import { http } from '../api/http';
 import { getAvatarImageUrl, compressAvatarUrl } from '../utils/avatar';
 import AvaturnCreator from '../components/AvaturnCreator.vue';
 import { heroConfig } from '../utils/config';
+import { useUserStore } from '../stores/user';
 
 const activeTab = ref('hero'); // hero, interface, quests, security
 const loading   = ref(false);
@@ -57,6 +58,10 @@ async function saveProfile(isAutoSave = false) {
     showMsg(isAutoSave ? '3D Avatar Synced!' : 'Hero Registry updated successfully!');
     // Force the dashboard to refresh its data
     window.dispatchEvent(new CustomEvent('refresh-dashboard'));
+    
+    // Update Pinia store so Sidebar/etc refresh
+    const userStore = useUserStore();
+    userStore.updateAvatar(user.value.avatar);
   } catch (e) {
     showMsg('Failed to update Registry.', 'error');
   } finally {
@@ -191,9 +196,8 @@ onBeforeRouteLeave(() => {
                   <p>Select your interface aesthetic</p>
                 </div>
                 <select v-model="heroConfig.theme" class="input select-input">
-                  <option value="cyber-dark">Cyber-Dark (Default)</option>
-                  <option value="mythic-blue">Mythic Blue</option>
-                  <option value="emerald-forest">Emerald Forest</option>
+                  <option value="dark">Dark Theme</option>
+                  <option value="light">Light Theme</option>
                 </select>
               </div>
 
@@ -288,7 +292,7 @@ onBeforeRouteLeave(() => {
 /* Header */
 .settings-header { margin-bottom: 30px; padding-top: 20px; }
 .header-content { display: flex; align-items: center; gap: 20px; }
-.title-group h1 { font-family: var(--ff-display); font-size: 1.8rem; margin: 0; color: #fff; }
+.title-group h1 { font-family: var(--ff-display); font-size: 1.8rem; margin: 0; color: var(--text); }
 .title-group p { color: var(--muted); margin: 5px 0 0; font-size: 0.95rem; }
 
 /* Grid Layout */
@@ -339,7 +343,7 @@ onBeforeRouteLeave(() => {
 .settings-panel { padding: 40px; min-height: 500px; position: relative; }
 .tab-content { width: 100%; }
 
-.section-title { font-family: var(--ff-display); font-size: 1.4rem; color: #fff; margin: 0 0 8px; }
+.section-title { font-family: var(--ff-display); font-size: 1.4rem; color: var(--text); margin: 0 0 8px; }
 .section-desc { color: var(--muted); margin-bottom: 40px; font-size: 0.95rem; }
 
 /* Forms */
@@ -348,11 +352,11 @@ onBeforeRouteLeave(() => {
 .field-label { font-family: var(--ff-head); font-weight: 700; color: var(--text-dim); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
 
 .input {
-  background: rgba(0,0,0,0.2);
+  background: var(--bg);
   border: 1px solid var(--border);
   padding: 12px 16px;
   border-radius: 10px;
-  color: #fff;
+  color: var(--text);
   font-family: var(--ff-body);
   transition: border-color 0.2s;
 }
@@ -377,7 +381,7 @@ onBeforeRouteLeave(() => {
   display: flex; justify-content: space-between; align-items: center;
   padding: 20px 0; border-bottom: 1px solid var(--border);
 }
-.item-info h3 { font-family: var(--ff-head); font-size: 1.1rem; margin: 0; color: #fff; }
+.item-info h3 { font-family: var(--ff-head); font-size: 1.1rem; margin: 0; color: var(--text); }
 .item-info p { color: var(--muted); margin: 4px 0 0; font-size: 0.85rem; }
 
 /* Toggle Switch */

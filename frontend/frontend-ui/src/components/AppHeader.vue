@@ -146,14 +146,14 @@ onMounted(async () => {
   background: rgba(239,68,68,0.1); color: var(--danger);
   border-radius: 50%; display: grid; place-items: center;
 }
-.modal-title { margin: 0 0 8px; font-family: var(--ff-head); font-size: 1.3rem; font-weight: 700; color: #fff; }
+.modal-title { margin: 0 0 8px; font-family: var(--ff-head); font-size: 1.3rem; font-weight: 700; color: var(--text); }
 .modal-desc  { margin: 0 0 22px; color: var(--muted); font-size: 0.9rem; }
 .modal-actions { display: flex; gap: 10px; }
 .btn-cancel, .btn-confirm {
   flex: 1; padding: 11px; border-radius: 10px; font-weight: 700; cursor: pointer;
   font-size: 0.9rem; font-family: var(--ff-body); transition: all 0.2s;
 }
-.btn-cancel  { background: transparent; border: 1px solid var(--border2); color: #fff; }
+.btn-cancel  { background: transparent; border: 1px solid var(--border2); color: var(--text); }
 .btn-cancel:hover { background: rgba(255,255,255,0.06); }
 .btn-confirm { background: var(--danger); border: none; color: #fff; }
 .btn-confirm:hover { background: #dc2626; }

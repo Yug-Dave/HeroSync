@@ -85,6 +85,7 @@ class Achievement {
   +String ruleType
   +int threshold
   +int xpReward
+  +String iconCode
   +int minLevel
   --
   +List~Dto~ evaluateAndUnlock(user)
