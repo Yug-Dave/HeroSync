@@ -57,6 +57,10 @@ export const useUserStore = defineStore('user', {
     updateStats(xp, streak) {
       if (xp !== undefined) this.xp = xp;
       if (streak !== undefined) this.streak = streak;
+    },
+
+    updateAvatar(avatar) {
+      this.avatar = avatar;
     }
   }
 });
