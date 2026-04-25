@@ -506,7 +506,7 @@ onUnmounted(() => {
 }
 .btn-cancel { background: transparent; border: 1px solid var(--border2); color: var(--text); }
 .btn-cancel:hover { background: rgba(255,255,255,.06); border-color: var(--muted); }
-.btn-delete { background: linear-gradient(135deg, #ef4444, #dc2626); border: none; color: #fff; }
+.btn-delete { background: var(--danger); border: none; color: #fff; }
 .btn-delete:hover { box-shadow: 0 4px 12px rgba(239,68,68,.3); transform: translateY(-1px); }
 
 .modal-fade-enter-active { transition: all .25s cubic-bezier(.34,1.56,.64,1); }
@@ -516,9 +516,12 @@ onUnmounted(() => {
 
 /* Boss Raid Styles */
 .card-boss {
-  border-color: rgba(239, 68, 68, 0.3) !important;
-  background: linear-gradient(160deg, rgba(20, 10, 10, 1), #1a2436) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  background: linear-gradient(160deg, rgba(var(--danger-rgb), 0.1), var(--card)) !important;
   box-shadow: 0 10px 30px rgba(239, 68, 68, 0.1);
+}
+:root[class*="theme-light"] .card-boss {
+  background: linear-gradient(160deg, rgba(239, 68, 68, 0.05), #ffffff) !important;
 }
 .boss-pulse {
   position: absolute; inset: 0;
@@ -628,7 +631,7 @@ onUnmounted(() => {
     margin-top: 12px;
     width: 100%;
     justify-content: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--border);
     padding-top: 12px;
   }
 
