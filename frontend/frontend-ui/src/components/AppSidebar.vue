@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { logout } from '../api/auth';
 import { getAvatarImageUrl } from '../utils/avatar';
@@ -54,7 +54,16 @@ onMounted(async () => {
   if (!userStore.initialized) {
     await userStore.fetchUser();
   }
+  window.addEventListener('refresh-dashboard', refreshUser);
 });
+
+onUnmounted(() => {
+  window.removeEventListener('refresh-dashboard', refreshUser);
+});
+
+async function refreshUser() {
+  await userStore.fetchUser();
+}
 </script>
 
 <template>
