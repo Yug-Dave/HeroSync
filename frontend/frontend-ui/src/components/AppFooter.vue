@@ -59,6 +59,8 @@ const currentYear = new Date().getFullYear();
 }
 .brand-name .highlight { 
   color: var(--accent); 
+}
+:root:not(.theme-light) .brand-name .highlight {
   text-shadow: 0 0 15px rgba(var(--accent-rgb), 0.3); 
 }
 .brand-copy { 
@@ -118,10 +120,20 @@ const currentYear = new Date().getFullYear();
 }
 
 @media (max-width: 768px) {
-  .footer { padding: 40px 20px; }
-  .footer-inner { flex-direction: column; gap: 32px; }
-  .footer-brand { flex-direction: column; gap: 6px; }
-  .social-links { order: 2; }
-  .footer-links { order: 3; flex-direction: column; gap: 16px; }
+  .footer { padding: 20px 20px; border-top: 1px solid var(--border); }
+  .footer-inner { flex-direction: column; gap: 18px; }
+  .footer-brand { order: 3; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 8px 12px; }
+  .brand-name .highlight { text-shadow: none !important; }
+  .brand-copy { font-size: 0.75rem; }
+  .social-links { order: 1; gap: 10px; }
+  .footer-links { 
+    order: 2; 
+    flex-direction: row; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 6px 20px; 
+    width: 100%;
+  }
+  .footer-links a { font-size: 0.7rem; letter-spacing: 0.5px; }
 }
 </style>
