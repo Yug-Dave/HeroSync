@@ -223,8 +223,8 @@ const bgParallax = computed(() => `translateY(-${activeSectionIndex.value * 15}v
 .menu-links a { text-decoration: none; color: var(--text); font-family: var(--ff-head); font-size: 1.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
 .menu-links a.active { color: var(--accent); }
 .menu-divider { width: 100%; border: none; border-top: 1px solid var(--border); margin: 10px 0; }
-.menu-btn-primary { background: var(--accent); color: #000; padding: 16px; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 800; font-family: var(--ff-head); font-size: 1.1rem; }
-.menu-btn-secondary { border: 1px solid var(--border); color: var(--text); padding: 16px; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 800; font-family: var(--ff-head); font-size: 1.1rem; }
+.menu-links .menu-btn-primary { background: var(--accent); color: #000; padding: 16px; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 800; font-family: var(--ff-head); font-size: 1.1rem; }
+.menu-links .menu-btn-secondary { border: 1px solid var(--border); color: var(--text); padding: 16px; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 800; font-family: var(--ff-head); font-size: 1.1rem; }
 
 /* --- SIDE NAV --- */
 .side-nav {
