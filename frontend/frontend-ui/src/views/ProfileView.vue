@@ -208,6 +208,7 @@ import { me } from "../api/auth";
 import { http } from "../api/http";
 import { ref } from 'vue';
 import { getXpHistory } from "../api/stats";
+import { useUserStore } from "../stores/user";
 
 import {
   getAllAchievements,
@@ -421,6 +422,10 @@ export default {
         this.form.bio = newSavedBio;
         this.savedAvatar = newSavedAvatar;
         this.form.avatar = newSavedAvatar;
+
+        // Update Pinia store so Sidebar/etc refresh
+        const userStore = useUserStore();
+        userStore.updateAvatar(newSavedAvatar);
 
         this.successMsg = "Hero lore saved successfully.";
         window.dispatchEvent(new CustomEvent('profile-updated'));
