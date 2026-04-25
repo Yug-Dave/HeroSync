@@ -90,31 +90,43 @@ HeroSync follows a **Modular Monolith** pattern with a clean separation of conce
 **Solution**: Developed a **Lazy Evaluation & Repair Pattern**. Instead of pre-generating thousands of badges, the system utilizes a lightweight "Generator" that uses pattern-matching logic to verify and sync achievements on-the-fly. This ensures the database remains lean while allowing the business logic (XP rewards per level) to evolve without breaking historical data.
 
 
-## ➤ Quick Start (Recommended)
-The fastest way to get HeroSync running is using **Docker**. You don't need to install Java, Node, or MySQL on your host machine.
+## ➤ Quick Start (Easiest)
+The fastest way to get HeroSync running is using **Docker**. This handles all the complex setup for you automatically.
 
-1. Clone the repo.
-2. Run:
+1. **Open Docker**: Ensure **Docker Desktop** is open and running on your computer.
+2. **Download**: Clone this repository to your machine.
+3. **Launch**: Open a terminal in the project folder and run:
    ```bash
    docker compose up -d
    ```
-3. Access the dashboard at `http://localhost:80`.
+4. **Access**: Open your browser and go to `http://localhost:80`.
 
-## ⬢ Manual Development Setup
-If you want to modify the code and see changes in real-time without Docker:
+---
 
-#### Prerequisites
+## ⬢ Manual Setup (For Developers)
+Use this method if you want to modify the code and see changes in real-time.
+
+### 1. Prerequisites
+You must have these installed on your machine:
 - **Java 21**+
 - **Node.js 18**+
 - **MySQL 8.0**
 
-#### Local Development
-1. **Backend**: Navigate to `./backend` and run `./mvnw spring-boot:run`.
-2. **Frontend**: Navigate to `./frontend/frontend-ui`, run `npm install` then `npm run dev`.
-3. **Access**: `http://localhost:5173`.
+### 2. Database Setup
+1. **Create DB**: Open your MySQL terminal and run: `CREATE DATABASE HeroSync_db;`.
+2. **Configure**: Open `./backend/src/main/resources/application.yaml`.
+3. **Password**: Find line 19 (`password: ${DB_PASSWORD}`) and replace `${DB_PASSWORD}` with your actual MySQL password.
+
+### 3. Start the Application
+- **Backend**: In the `/backend` folder, run `./mvnw spring-boot:run`.
+- **Frontend**: In `/frontend/frontend-ui`, run `npm install` and then `npm run dev`.
+- **Access**: Open your browser to `http://localhost:5173`.
 
 ## ⎔ Documentation
 Detailed documentation, including the [UML Class Diagram](./Wiki/docs/UML-Class-diagram.md) and [Assignment Breakdown](./Wiki/docs/Assignment-Breakdown.md), can be found in the `/Wiki` directory.
+
+> [!NOTE]
+> **Project Attribution**: HeroSync is a professional solo evolution of a university project originally developed as **Momentum** by team **GlitchGang** ([Original Repository](https://github.com/FrankV17/web2-ws25-GlitchGang)). As a core member of the original development team, I have extensively refactored and expanded the codebase into this production-ready platform.
 
 ---
 *Developed with a focus on Performance, Professional Integrity, and Epic Engagement.*
