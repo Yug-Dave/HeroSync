@@ -33,7 +33,7 @@ public class SecurityConfig {
             .requestMatchers("/", "/index.html", "/static/**", "/assets/**", "/favicon.ico").permitAll()
             .requestMatchers("/h2-console/**").permitAll()
             .requestMatchers("/graphiql", "/graphiql/**").permitAll()
-            .requestMatchers("/graphql", "/graphql/**").permitAll()
+            .requestMatchers("/graphql").authenticated()
             
             // Auth endpoints (Registration, Login, etc.)
             .requestMatchers("/auth/register", "/auth/login",
