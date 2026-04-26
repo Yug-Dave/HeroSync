@@ -1,24 +1,3 @@
-<script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import AppHeader from './components/AppHeader.vue';
-import AppSidebar from './components/AppSidebar.vue';
-import AppFooter from './components/AppFooter.vue';
-import XpBurst from './components/XpBurst.vue';
-import { applyConfig } from './utils/config';
-
-const route = useRoute();
-const sidebarOpen = ref(false);
-
-const publicPages = ['/', '/login', '/signup'];
-const showNav    = computed(() => !publicPages.includes(route.path));
-const showFooter = computed(() => !publicPages.includes(route.path));
-
-onMounted(() => {
-  applyConfig();
-});
-</script>
-
 <template>
   <div class="app-root">
     <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -47,8 +26,41 @@ onMounted(() => {
       <AppFooter v-if="showFooter" />
       <XpBurst />
     </div>
+
+    <!-- Right Sidebar AI Companion -->
+    <HeroModeAI v-if="showNav" />
   </div>
 </template>
+
+<script setup>
+import { ref, computed, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { useUserStore } from './stores/user';
+import AppHeader from './components/AppHeader.vue';
+import AppSidebar from './components/AppSidebar.vue';
+import AppFooter from './components/AppFooter.vue';
+import XpBurst from './components/XpBurst.vue';
+import HeroModeAI from './components/HeroModeAI.vue';
+import { applyConfig, heroConfig } from './utils/config';
+
+const route = useRoute();
+const sidebarOpen = ref(false);
+
+const publicPages = ['/', '/login', '/signup'];
+const showNav    = computed(() => !publicPages.includes(route.path));
+const showFooter = computed(() => !publicPages.includes(route.path));
+
+const userStore = useUserStore();
+
+onMounted(() => {
+  applyConfig(userStore.companionChoice);
+});
+
+// Watch for companion or theme changes to update global colors instantly
+watch([() => userStore.companionChoice, () => heroConfig.theme, () => route.path], () => {
+  applyConfig(userStore.companionChoice);
+});
+</script>
 
 <style>
 html { scroll-behavior: smooth; }

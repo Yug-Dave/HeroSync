@@ -7,6 +7,7 @@ import AddHabitModal from '../components/AddHabitModal.vue';
 import DashboardAchievementsPanel from '../components/DashboardAchivementsPanel.vue';
 import CharacterCard from '../components/CharacterCard.vue';
 import { playSound } from '../utils/config';
+import { useUserStore } from '../stores/user';
 
 const router = useRouter();
 
@@ -32,6 +33,29 @@ const level = computed(() => Math.max(1, Math.floor(xp.value / 2000) + 1));
 
 // Achievements ref
 const achievementsRef = ref(null);
+
+const userStore = useUserStore();
+const companionChoice = computed(() => userStore.companionChoice);
+const battlePlan = ref('');
+
+const companionMap = {
+  SYNC: { image: '/companion_omega.png', color: '#3b82f6', name: 'SYNC' },
+  AURA: { image: '/companion_kaelen.png', color: '#8b5cf6', name: 'AURA' },
+  VOLT: { image: '/companion_rex.png', color: '#f97316', name: 'VOLT' }
+};
+
+const currentDashboardAvatar = computed(() => companionMap[companionChoice.value]?.image || '/companion_omega.png');
+const companionColor = computed(() => companionMap[companionChoice.value]?.color || '#3b82f6');
+const companionName = computed(() => companionMap[companionChoice.value]?.name || 'SYNC');
+
+const streakWeather = computed(() => {
+  const s = userStore.streak;
+  if (s >= 14) return { icon: '🔥', label: 'LEGENDARY',  color: '#f97316', desc: `${s} day inferno` };
+  if (s >= 7)  return { icon: '⚡', label: 'BLAZING',    color: '#eab308', desc: `${s} days strong` };
+  if (s >= 3)  return { icon: '🌤', label: 'WARMING UP', color: '#3b82f6', desc: `${s} day streak` };
+  if (s >= 1)  return { icon: '❄️', label: 'COLD START', color: '#94a3b8', desc: `${s} day — push harder` };
+  return              { icon: '💀', label: 'FROZEN',     color: '#64748b', desc: 'No streak — start today' };
+});
 
 // ── Computed ───────────────────────────────────────────
 const completedCount = computed(() => habits.value.filter(h => h.completed).length);
@@ -74,11 +98,38 @@ async function fetchInitialData() {
       user.value.avatar = data.avatar || '';
       user.value.xp     = data.totalXP || 0;
       user.value.streak = data.currentStreak || 0;
+      
+      // Sync store
+      userStore.updateStats(data.totalXP, data.currentStreak);
     }
   } catch (e) { console.warn('Auth check failed'); }
   await fetchHabits();
   await fetchGoals();
   await fetchActivityStats();
+}
+
+async function fetchBattlePlan(force = false) {
+  const today = new Date().toDateString();
+  const cached = sessionStorage.getItem('battlePlan');
+  const cachedDate = sessionStorage.getItem('battlePlanDate');
+  const cachedBuddy = sessionStorage.getItem('battlePlanBuddy');
+
+  // If same day + same buddy + not forced, use cache
+  if (!force && cached && cachedDate === today && cachedBuddy === companionChoice.value) {
+    battlePlan.value = cached;
+    return;
+  }
+
+  battlePlan.value = ''; // Trigger loading state
+  try {
+    const res = await http.post('/ai/chat', { message: '', mode: 'greeting' });
+    battlePlan.value = res.data.reply;
+    sessionStorage.setItem('battlePlan', res.data.reply);
+    sessionStorage.setItem('battlePlanDate', today);
+    sessionStorage.setItem('battlePlanBuddy', companionChoice.value);
+  } catch (e) {
+    battlePlan.value = 'Stay consistent. Every quest counts.';
+  }
 }
 
 async function fetchHabits() {
@@ -236,15 +287,21 @@ const saveGoal = async (payload) => {
   }
 };
 
+import { watch } from 'vue';
+watch(companionChoice, () => {
+  fetchBattlePlan(true); // Force refresh on switch
+});
+
 const formatDate = (d) => ({
   day: new Date(d).getDate().toString().padStart(2, '0'),
   mon: new Date(d).toLocaleString('default', { month: 'short' })
 });
 const formatSimpleDate = (d) => d.substring(5);
 
-onMounted(() => {
+onMounted(async () => {
   fetchInitialData();
   window.addEventListener('refresh-dashboard', fetchInitialData);
+  fetchBattlePlan();
 });
 </script>
 
@@ -273,28 +330,36 @@ onMounted(() => {
                 </div>
               </CharacterCard>
 
-              <!-- AI Companion Banner -->
-              <div class="ai-companion-banner card mini">
-                <div class="mascot-svg-wrap">
-                  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="25" y="40" width="50" height="40" rx="12" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-width="2"/>
-                    <rect x="30" y="15" width="40" height="30" rx="10" fill="var(--bg2)" stroke="var(--accent)" stroke-width="2.5"/>
-                    <rect x="35" y="20" width="30" height="20" rx="6" fill="#1e293b"/>
-                    <circle cx="43" cy="30" r="2.5" fill="var(--accent)"><animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite" /></circle>
-                    <circle cx="57" cy="30" r="2.5" fill="var(--accent)"><animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite" /></circle>
-                    <line x1="50" y1="15" x2="50" y2="8" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="6" r="3" fill="var(--accent)"/>
-                    <circle cx="20" cy="60" r="6" fill="var(--bg2)" stroke="var(--accent)" stroke-width="1.5" /><circle cx="80" cy="60" r="6" fill="var(--bg2)" stroke="var(--accent)" stroke-width="1.5" />
-                    <ellipse cx="50" cy="92" rx="20" ry="4" fill="rgba(0,0,0,0.1)"><animate attributeName="rx" values="20;15;20" dur="4s" repeatCount="indefinite" /><animate attributeName="opacity" values="0.1;0.05;0.1" dur="4s" repeatCount="indefinite" /></ellipse>
-                  </svg>
+              <!-- Companion Motivation Card -->
+              <div class="motivation-card" :style="{ '--comp-color': companionColor }">
+                <div class="motivation-left">
+                  <div class="dash-avatar-frame" :style="{ borderColor: companionColor }">
+                    <img :src="currentDashboardAvatar" class="dash-avatar" />
+                  </div>
+                  <div class="comp-status">
+                    <span class="comp-dot"></span>
+                    System Online
+                  </div>
                 </div>
-                <div class="ai-message">
-                  <h3>Hero Mode AI</h3>
-                  <p>"Greetings, Hero! Consistency is the path to legendary status. Shall we tackle a new quest?"</p>
+                <div class="motivation-right">
+                  <div class="motivation-header">
+                    <span class="comp-name-label" :style="{ color: companionColor }">
+                      {{ companionName }}
+                    </span>
+                    <span class="motivation-tag">Daily Briefing</span>
+                  </div>
+                  <p class="motivation-text" v-if="battlePlan">{{ battlePlan }}</p>
+                  <p class="motivation-text placeholder" v-else>Initializing neural link...</p>
+                  
+                  <div class="streak-weather">
+                    <span class="weather-icon">{{ streakWeather.icon }}</span>
+                    <span class="weather-label" :style="{ color: streakWeather.color }">
+                      {{ streakWeather.label }}
+                    </span>
                 </div>
-                <button class="deploy-btn">Deploy Quest</button>
               </div>
             </div>
-
+            </div>
             <div class="stats-column">
               <div class="stat-grid-mini">
                 <div class="stat-card" style="display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 16px;">
@@ -540,6 +605,124 @@ onMounted(() => {
 .day-box.lvl1 { background: var(--hm-lvl1); border-color: var(--hm-lvl1-border); }
 .day-box.lvl2 { background: var(--hm-lvl2); border-color: var(--hm-lvl2-border); }
 .day-box.lvl3 { background: var(--hm-lvl3); border-color: var(--hm-lvl3-border); }
+
+/* ── Companion Motivation Card ── */
+.motivation-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s;
+  animation: fadeUp 0.6s ease-out;
+}
+.motivation-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at left center, var(--comp-color, #3b82f6) 0%, transparent 60%);
+  opacity: 0.04;
+  pointer-events: none;
+}
+.motivation-card:hover { border-color: var(--comp-color, var(--border2)); }
+
+.motivation-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.dash-avatar-frame {
+  width: 88px;
+  height: 88px;
+  border-radius: 14px;
+  border: 2px solid;
+  overflow: hidden;
+  background: #000;
+}
+.dash-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transform: scale(1.4);
+}
+.comp-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-family: var(--ff-head);
+}
+.comp-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #22c55e;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.motivation-right { flex: 1; min-width: 0; }
+.motivation-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.comp-name-label {
+  font-family: var(--ff-head);
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+.motivation-tag {
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--ff-head);
+  letter-spacing: 1px;
+}
+.motivation-text {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 0 0 12px;
+}
+.motivation-text.placeholder { color: var(--muted); font-style: italic; }
+
+.streak-weather {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 7px 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: fit-content;
+}
+.weather-icon { font-size: 1rem; }
+.weather-label {
+  font-family: var(--ff-head);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+.weather-desc {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
 
 /* ── AI Companion ── */
 .ai-companion-banner.mini {

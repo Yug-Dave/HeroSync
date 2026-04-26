@@ -1,6 +1,7 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { getAvatarImageUrl, is3DAvatar, expandAvatarUrl } from '../utils/avatar';
+import { http } from '../api/http';
 
 const props = defineProps({
   level: { type: Number, default: 1 },
@@ -44,11 +45,27 @@ const viewerError = ref('');
 const open3DModel = () => {
   isModalOpen.value = true;
   viewerError.value = '';
+  runDiagnostics();
 };
 
 const close3DModel = () => {
   isModalOpen.value = false;
 };
+
+async function runDiagnostics() {
+  isDiagnosticsLoading.value = true;
+  try {
+    const res = await http.post('/ai/diagnostics', {});
+    // Response is raw JSON string
+    const text = typeof res.data === 'string' ? res.data : JSON.stringify(res.data);
+    diagnosticsData.value = JSON.parse(text);
+  } catch (e) {
+    console.warn('Diagnostics unavailable:', e);
+    diagnosticsData.value = null;
+  } finally {
+    isDiagnosticsLoading.value = false;
+  }
+}
 
 // --- Model Viewer Events ---
 const onModelError = (event) => {
@@ -60,16 +77,9 @@ const onModelLoad = () => {
   viewerError.value = '';
 };
 
-// AI-Generated Stats Analysis
-const strengths = [
-  { name: 'Consistency', value: 'S-Rank', desc: 'Maintains daily streaks with robotic precision.' },
-  { name: 'Focus Window', value: 'Morning', desc: '92% efficiency boost before 10:00 AM.' }
-];
-
-const weaknesses = [
-  { name: 'Fatigue Spike', value: 'High', desc: 'Habit velocity drops significantly on Sundays.' },
-  { name: 'Mindfulness', value: 'D-Rank', desc: 'Neural scans show high resistance to meditation.' }
-];
+// AI-Generated Stats Analysis (live)
+const isDiagnosticsLoading = ref(false);
+const diagnosticsData = ref(null);
 
 // --- Parallax Tilt Logic for 2D Avatars ---
 const tiltX = ref(0);
@@ -237,29 +247,79 @@ const handleCardMouseMove = (e) => {
                 </header>
 
                 <div class="intel-scroll">
-                  <section class="intel-section">
-                    <h4 class="section-label">STRENGTHS</h4>
-                    <div class="intel-card" v-for="s in strengths" :key="s.name">
-                      <div class="intel-card-top">
-                        <span class="intel-name">{{ s.name }}</span>
-                        <span class="intel-rank success">{{ s.value }}</span>
+                  <!-- Loading Skeleton -->
+                  <template v-if="isDiagnosticsLoading">
+                    <section class="intel-section">
+                      <h4 class="section-label">STRENGTHS</h4>
+                      <div class="intel-card" v-for="i in 2" :key="'sk'+i">
+                        <div class="skeleton" style="height:14px; width:60%; margin-bottom:8px;"></div>
+                        <div class="skeleton" style="height:10px; width:90%;"></div>
+                        <div class="skeleton" style="height:2px; width:100%; margin-top:10px;"></div>
                       </div>
-                      <p class="intel-desc">{{ s.desc }}</p>
-                      <div class="intel-meter"><div class="meter-fill success" style="width: 85%"></div></div>
-                    </div>
-                  </section>
+                    </section>
+                    <section class="intel-section">
+                      <h4 class="section-label">WEAKNESSES</h4>
+                      <div class="intel-card" v-for="i in 2" :key="'skw'+i">
+                        <div class="skeleton" style="height:14px; width:55%; margin-bottom:8px;"></div>
+                        <div class="skeleton" style="height:10px; width:85%;"></div>
+                      </div>
+                    </section>
+                  </template>
 
-                  <section class="intel-section">
-                    <h4 class="section-label">WEAKNESSES</h4>
-                    <div class="intel-card" v-for="w in weaknesses" :key="w.name">
-                      <div class="intel-card-top">
-                        <span class="intel-name">{{ w.name }}</span>
-                        <span class="intel-rank danger">{{ w.value }}</span>
-                      </div>
-                      <p class="intel-desc">{{ w.desc }}</p>
-                      <div class="intel-meter"><div class="meter-fill danger" style="width: 35%"></div></div>
+                  <!-- Live Diagnostics Data -->
+                  <template v-else-if="diagnosticsData">
+                    <div class="status-row" style="margin-bottom:20px;">
+                      <span class="status-pill"
+                        :class="{
+                          'status-stable':    diagnosticsData.status === 'STABLE',
+                          'status-improving': diagnosticsData.status === 'IMPROVING',
+                          'status-critical':  diagnosticsData.status === 'CRITICAL'
+                        }">
+                        ● {{ diagnosticsData.status }}
+                      </span>
+                      <span class="intel-summary">{{ diagnosticsData.summary }}</span>
                     </div>
-                  </section>
+
+                    <section class="intel-section">
+                      <h4 class="section-label">STRENGTHS</h4>
+                      <div class="intel-card" v-for="s in diagnosticsData.strengths" :key="s.name">
+                        <div class="intel-card-top">
+                          <span class="intel-name">{{ s.name }}</span>
+                          <span class="intel-rank success">{{ s.rank }}</span>
+                        </div>
+                        <p class="intel-desc">{{ s.detail }}</p>
+                        <div class="intel-meter"><div class="meter-fill success" :style="{ width: (s.score || 0) + '%' }"></div></div>
+                      </div>
+                    </section>
+
+                    <section class="intel-section">
+                      <h4 class="section-label">WEAKNESSES</h4>
+                      <div class="intel-card" v-for="w in diagnosticsData.weaknesses" :key="w.name">
+                        <div class="intel-card-top">
+                          <span class="intel-name">{{ w.name }}</span>
+                          <span class="intel-rank"
+                            :class="{
+                              danger:  w.severity === 'High',
+                              warning: w.severity === 'Medium',
+                              muted:   w.severity === 'Low'
+                            }">
+                            {{ w.severity }}
+                          </span>
+                        </div>
+                        <p class="intel-desc">{{ w.detail }}</p>
+                      </div>
+                    </section>
+
+                    <button class="rescan-btn" :disabled="isDiagnosticsLoading" @click="runDiagnostics">
+                      {{ isDiagnosticsLoading ? 'Scanning...' : '↻ Re-run Neural Scan' }}
+                    </button>
+                  </template>
+
+                  <!-- Fallback (API error) -->
+                  <template v-else>
+                    <p style="color: var(--muted); font-size: 0.85rem;">Diagnostics unavailable — add an AI key to enable.</p>
+                    <button class="rescan-btn" @click="runDiagnostics">↻ Re-run Neural Scan</button>
+                  </template>
                 </div>
               </div>
             </div>
@@ -472,6 +532,39 @@ const handleCardMouseMove = (e) => {
 .meter-fill.success { background: #10b981; }
 .meter-fill.danger { background: #f43f5e; }
 
+/* ── New Diagnostics Styles ── */
+.skeleton {
+  background: linear-gradient(90deg, var(--border) 25%, var(--border2) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 4px;
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+.status-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.status-pill {
+  font-family: monospace; font-size: 0.72rem; font-weight: 700;
+  padding: 3px 10px; border-radius: 20px; letter-spacing: 1px;
+}
+.status-stable    { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+.status-improving { background: rgba(59,130,246,0.12); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); }
+.status-critical  { background: rgba(239,68,68,0.12);  color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+
+.intel-summary { font-size: 0.8rem; color: var(--text-dim); font-style: italic; }
+.warning { color: #f59e0b; }
+.muted   { color: var(--muted); }
+
+.rescan-btn {
+  margin-top: 20px; width: 100%;
+  padding: 10px; border-radius: 10px;
+  border: 1px solid var(--border); background: rgba(255,255,255,0.03);
+  color: var(--text-dim); font-family: var(--ff-head); font-size: 0.8rem;
+  font-weight: 700; cursor: pointer; transition: all 0.2s;
+}
+.rescan-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: rgba(0,229,160,0.05); }
+.rescan-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+
 .close-btn { 
   width: 32px; height: 32px; border-radius: 10px; 
   color: var(--muted); background: var(--card2); border: 1px solid var(--border); 
@@ -518,5 +611,11 @@ const handleCardMouseMove = (e) => {
   
   .hologram-layout { flex-direction: column; overflow-y: auto; }
   .hologram-modal { height: 90vh; max-height: none; overflow: hidden; }
+  .stage-container { flex: none; height: 320px; border-right: none; border-bottom: 1px solid var(--border); }
+  .intel-panel { padding: 24px !important; }
+  .intel-header { margin-bottom: 20px !important; }
+  .intel-title { font-size: 1.2rem !important; }
+  .hologram-stage { min-height: 200px !important; }
+  .viewer-3d { height: 260px !important; }
 }
 </style>

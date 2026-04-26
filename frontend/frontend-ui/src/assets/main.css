@@ -97,7 +97,7 @@
 .theme-light .btn-epic-small,
 .theme-light .btn-submit,
 .theme-light .btn-plan {
-  background: #2563eb !important;
+  background: var(--accent) !important;
   background-image: none !important;
   color: #ffffff !important;
 }
@@ -158,6 +158,7 @@ body {
   background-size: cover;
   line-height: 1.6;
   min-height: 100dvh;
+  overflow-x: hidden;
 }
 
 /* ── Scrollbar ── */
@@ -197,9 +198,15 @@ body {
 
 /* ── Container ── */
 .container {
-  width: min(1450px, 94vw);
+  width: min(1450px, 100%);
   margin-inline: auto;
-  padding: 28px 0;
+  padding: 28px 24px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 16px;
+  }
 }
 
 /* ── Header ── */
@@ -318,6 +325,14 @@ body {
   grid-column: span 12;
 }
 
+@media (max-width: 768px) {
+  .grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
 /* ── Global Media Queries ── */
 @media (max-width: 1200px) {
   .container { width: min(1100px, 94vw); }
@@ -369,16 +384,14 @@ body {
 
 @media (max-width: 768px) {
   .stat-row {
-    grid-template-columns: 1fr !important;
-  }
-
-  .hm-grid {
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 
   .grid .card {
     height: auto !important;
-    min-height: 400px;
+    min-height: auto;
   }
 }
 

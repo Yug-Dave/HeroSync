@@ -10,14 +10,13 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
-  @Query(value = "SELECT a.date as date, SUM(h.xp_value * a.completions) as xpValue " +
-    "FROM activity a " +
-    "JOIN habit h ON a.habit_id = h.id " +
-    "WHERE h.user_id = :userId " +
-    "AND a.date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) " +
-    "GROUP BY a.date " +
-    "ORDER BY a.date ASC", nativeQuery = true)
-  List<Map<String, Object>> getWeeklyXpHistory(@Param("userId") Long userId);
+  @Query("SELECT a.date as date, SUM(h.xpValue * a.completions) as xpValue " +
+         "FROM Activity a JOIN a.habit h " +
+         "WHERE h.user.userId = :userId " +
+         "AND a.date >= :startDate " +
+         "GROUP BY a.date " +
+         "ORDER BY a.date ASC")
+  List<Map<String, Object>> getWeeklyXpHistory(@Param("userId") Long userId, @Param("startDate") LocalDate startDate);
 
   List<Activity> findByDateBetween(LocalDate start, LocalDate end);
   List<Activity> findByHabit_User_UserId(Long userId);

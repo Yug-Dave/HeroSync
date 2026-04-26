@@ -1,12 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { http } from '../api/http';
 import { getAvatarImageUrl, compressAvatarUrl } from '../utils/avatar';
 import AvaturnCreator from '../components/AvaturnCreator.vue';
 import { heroConfig } from '../utils/config';
 import { useUserStore } from '../stores/user';
+import ConfirmationModal from '../components/ConfirmationModal.vue';
 
-const activeTab = ref('hero'); // hero, interface, quests, security
+const activeTab = ref('hero'); // hero, interface, quests, security, companion
 const loading   = ref(false);
 const message   = ref('');
 const messageType = ref('success');
@@ -15,10 +16,16 @@ const user = ref({
   name: '',
   email: '',
   bio: '',
-  avatar: ''
+  avatar: '',
+  companionChoice: 'SYNC',
+  aiProvider: 'GROQ'
 });
 
 const showRPM = ref(false);
+const showConfirmModal = ref(false);
+const pendingCompanionId = ref(null);
+const pendingCompanionName = ref('');
+const pendingCompanionColor = ref('');
 
 const onAvatarCreated = async (payload) => {
   // Update local state - Support new Combo format for 2D previews
@@ -39,6 +46,12 @@ async function loadData() {
   try {
     const res = await http.get('/profile/me');
     user.value = res.data;
+    
+    // Only update global store if it hasn't been initialized yet
+    // This prevents "reverting" if the user just changed it in the sidebar
+    if (!userStore.initialized) {
+      userStore.updateCompanion(res.data.companionChoice, res.data.aiProvider);
+    }
   } catch (e) {
     console.error(e);
   } finally {
@@ -81,6 +94,54 @@ function showMsg(txt, type = 'success') {
 
 onMounted(loadData);
 
+async function selectCompanion(companionId) {
+  if (user.value.companionChoice === companionId) return;
+  
+  const compInfo = {
+    'SYNC': { name: 'SYNC', color: '#3b82f6' },
+    'AURA': { name: 'AURA', color: '#8b5cf6' },
+    'VOLT': { name: 'VOLT', color: '#f97316' }
+  }[companionId];
+
+  pendingCompanionId.value = companionId;
+  pendingCompanionName.value = compInfo.name;
+  pendingCompanionColor.value = compInfo.color;
+  showConfirmModal.value = true;
+}
+
+async function confirmCompanionSwitch() {
+  const companionId = pendingCompanionId.value;
+  showConfirmModal.value = false;
+
+  user.value.companionChoice = companionId;
+  try {
+    await http.put('/profile/me', {
+      name: user.value.name,
+      bio: user.value.bio,
+      avatar: user.value.avatar,
+      companionChoice: companionId
+    });
+    const userStore = useUserStore();
+    userStore.updateCompanion(companionId, null);
+    showMsg('Sync-Buddy updated!');
+  } catch (e) { showMsg('Failed to update companion.', 'error'); }
+}
+
+const userStore = useUserStore();
+
+async function selectProvider(providerId) {
+  try {
+    await http.put('/profile/me', {
+      name: user.value.name,
+      bio: user.value.bio,
+      avatar: user.value.avatar,
+      aiProvider: providerId
+    });
+    userStore.updateCompanion(null, providerId);
+    showMsg('AI Engine updated!');
+  } catch (e) { showMsg('Failed to update AI engine.', 'error'); }
+}
+
 import { onBeforeRouteLeave } from 'vue-router';
 onBeforeRouteLeave(() => {
   showRPM.value = false; // Force close avatar creator before leaving
@@ -112,7 +173,8 @@ onBeforeRouteLeave(() => {
               { id: 'hero', label: 'Hero Registry', icon: 'user' },
               { id: 'interface', label: 'Interface Modulators', icon: 'monitor' },
               { id: 'quests', label: 'Quest Parameters', icon: 'sword' },
-              { id: 'security', label: 'Vault & Rites', icon: 'lock' }
+              { id: 'security', label: 'Vault & Rites', icon: 'lock' },
+              { id: 'companion', label: 'Sync-Buddy', icon: 'robot' }
             ]" 
             :key="tab.id"
             class="nav-btn"
@@ -121,12 +183,13 @@ onBeforeRouteLeave(() => {
           >
             <span class="btn-glow" v-if="activeTab === tab.id"></span>
             <div class="btn-content">
-              <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path v-if="tab.icon === 'user'" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle v-if="tab.icon === 'user'" cx="12" cy="7" r="4"/>
-                <rect v-if="tab.icon === 'monitor'" x="2" y="3" width="20" height="14" rx="2" ry="2"/><line v-if="tab.icon === 'monitor'" x1="8" y1="21" x2="16" y2="21"/><line v-if="tab.icon === 'monitor'" x1="12" y1="17" x2="12" y2="21"/>
-                <path v-if="tab.icon === 'sword'" d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path v-if="tab.icon === 'sword'" d="M13 19l6-6"/>
-                <rect v-if="tab.icon === 'lock'" x="3" y="11" width="18" height="11" rx="2" ry="2"/><path v-if="tab.icon === 'lock'" d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
+                <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path v-if="tab.icon === 'user'" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle v-if="tab.icon === 'user'" cx="12" cy="7" r="4"/>
+                  <rect v-if="tab.icon === 'monitor'" x="2" y="3" width="20" height="14" rx="2" ry="2"/><line v-if="tab.icon === 'monitor'" x1="8" y1="21" x2="16" y2="21"/><line v-if="tab.icon === 'monitor'" x1="12" y1="17" x2="12" y2="21"/>
+                  <path v-if="tab.icon === 'sword'" d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path v-if="tab.icon === 'sword'" d="M13 19l6-6"/>
+                  <rect v-if="tab.icon === 'lock'" x="3" y="11" width="18" height="11" rx="2" ry="2"/><path v-if="tab.icon === 'lock'" d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  <circle v-if="tab.icon === 'robot'" cx="12" cy="8" r="4"/><rect v-if="tab.icon === 'robot'" x="4" y="14" width="16" height="8" rx="3"/><circle v-if="tab.icon === 'robot'" cx="9" cy="18" r="1"/><circle v-if="tab.icon === 'robot'" cx="15" cy="18" r="1"/>
+                </svg>
               {{ tab.label }}
             </div>
           </button>
@@ -266,6 +329,58 @@ onBeforeRouteLeave(() => {
               </div>
             </div>
 
+            <!-- Sync-Buddy / Companion -->
+            <div v-else-if="activeTab === 'companion'" class="tab-content" key="companion">
+              <h2 class="section-title">Your Sync-Buddy</h2>
+              <p class="section-desc">Choose the AI companion that matches your training style</p>
+
+              <div class="companion-cards">
+                <div
+                  v-for="c in [
+                    { id: 'SYNC', label: 'SYNC', type: 'The Strategist', color: '#3b82f6', initial: 'S', image: '/companion_omega.png', desc: 'Precise, data-driven. Turns your stats into a tactical advantage.' },
+                    { id: 'AURA', label: 'AURA', type: 'The Empathetic Guide', color: '#8b5cf6', initial: 'A', image: '/companion_kaelen.png', desc: 'Warm and supportive. Celebrates effort and watches for burnout.' },
+                    { id: 'VOLT', label: 'VOLT', type: 'The Motivator', color: '#f97316', initial: 'V', image: '/companion_rex.png', desc: 'High-energy coach. Turns every quest into a competition.' }
+                  ]"
+                  class="companion-card"
+                  :class="{ selected: userStore.companionChoice === c.id }"
+                  :style="userStore.companionChoice === c.id ? { borderColor: c.color, boxShadow: '0 0 20px ' + c.color + '22' } : {}"
+                  @click="selectCompanion(c.id)"
+                >
+                  <div class="companion-preview" :style="{ borderColor: c.color }">
+                    <img :src="c.image" :alt="c.label" class="companion-card-img" />
+                  </div>
+                  <div class="companion-info">
+                    <span class="companion-label" :style="{ color: userStore.companionChoice === c.id ? c.color : 'var(--text)' }">{{ c.label }}</span>
+                    <span class="companion-type">{{ c.type }}</span>
+                    <span class="companion-desc">{{ c.desc }}</span>
+                  </div>
+                  <div v-if="userStore.companionChoice === c.id" class="selected-badge" :style="{ background: c.color }">✓</div>
+                </div>
+              </div>
+
+              <h2 class="section-title" style="margin-top: 40px;">AI Engine</h2>
+              <p class="section-desc">Select which model powers your companion</p>
+
+              <div class="provider-cards">
+                <div
+                  v-for="p in [
+      { id: 'GROQ',   name: 'Groq (LLaMA 3.1)', desc: 'llama-3.1-8b-instant · Default', color: '#22c55e' },
+      { id: 'GEMINI', name: 'Gemini (Google)',    desc: 'gemini-1.5-flash · Free tier',             color: '#3b82f6' },
+      { id: 'GPT',    name: 'GPT-4o (OpenAI)',    desc: 'gpt-4o-mini · Paid',                       color: '#a78bfa' }
+    ]"
+                  :key="p.id"
+                  class="provider-card"
+                  :class="{ selected: userStore.aiProvider === p.id }"
+                  :style="userStore.aiProvider === p.id ? { borderColor: p.color, boxShadow: '0 0 20px ' + p.color + '22' } : {}"
+                  @click="selectProvider(p.id)"
+                >
+                  <div class="provider-name" :style="{ color: userStore.aiProvider === p.id ? p.color : 'var(--text)' }">{{ p.name }}</div>
+                  <div class="provider-sub">{{ p.desc }}</div>
+                  <div v-if="userStore.aiProvider === p.id" class="selected-badge" :style="{ background: p.color }">✓</div>
+                </div>
+              </div>
+            </div>
+
           </transition>
 
           <!-- Toast Message -->
@@ -283,6 +398,16 @@ onBeforeRouteLeave(() => {
     v-if="showRPM" 
     @close="showRPM = false" 
     @avatar-created="onAvatarCreated" 
+  />
+
+  <ConfirmationModal
+    :show="showConfirmModal"
+    title="Neural Realignment"
+    :message="`Are you sure you want to realign your neural link with ${pendingCompanionName}? Your current progress with your active buddy will be paused.`"
+    confirmText="Realign Link"
+    :accentColor="pendingCompanionColor"
+    @confirm="confirmCompanionSwitch"
+    @cancel="showConfirmModal = false"
   />
 </template>
 
@@ -442,4 +567,63 @@ input:checked + .slider:before { transform: translateX(20px); }
   50% { opacity: 0.8; transform: scaleX(1.2); }
 }
 @media (max-width: 768px) { .avatar-edit { flex-direction: column; align-items: flex-start; gap: 15px; } .input-row { flex-wrap: wrap; } .settings-panel { padding: 20px; } }
+
+/* Companion Cards */
+.companion-cards { display: flex; flex-direction: column; gap: 12px; max-width: 640px; }
+.companion-card {
+  display: flex; align-items: center; gap: 16px;
+  padding: 18px 20px; border-radius: 14px;
+  border: 1px solid var(--border); background: rgba(255,255,255,0.02);
+  cursor: pointer; transition: all 0.2s; position: relative;
+}
+.companion-card:hover { background: rgba(255,255,255,0.04); border-color: var(--border2); transform: translateX(4px); }
+.companion-card.selected { background: rgba(255,255,255,0.04); }
+.companion-preview {
+  width: 80px; height: 110px; border-radius: 14px; border: 1.5px solid;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  overflow: hidden; background: #000;
+}
+.companion-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.3);
+  object-position: center top;
+  transform-origin: center top;
+}
+.companion-initial { font-family: var(--ff-head); font-size: 1.1rem; font-weight: 900; }
+.companion-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.companion-label { font-family: var(--ff-head); font-size: 1rem; font-weight: 800; transition: color 0.2s; }
+.companion-type { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+.companion-desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.4; margin-top: 2px; }
+.selected-badge {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #000; font-size: 0.75rem; font-weight: 900; flex-shrink: 0;
+}
+
+/* Provider Cards */
+.provider-cards { display: flex; gap: 12px; flex-wrap: wrap; max-width: 640px; }
+.provider-card {
+  flex: 1; min-width: 160px;
+  padding: 18px 20px; border-radius: 14px;
+  border: 1px solid var(--border); background: rgba(255,255,255,0.02);
+  cursor: pointer; transition: all 0.2s;
+}
+.provider-card:hover { background: rgba(255,255,255,0.04); border-color: var(--border2); transform: translateY(-2px); }
+.provider-card.selected { background: rgba(255,255,255,0.04); }
+.provider-name { font-family: var(--ff-head); font-size: 1rem; font-weight: 800; margin-bottom: 2px; transition: color 0.2s; }
+.provider-vendor { font-size: 0.75rem; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.provider-sub { font-size: 0.72rem; color: var(--text-dim); }
+
+@media (max-width: 600px) {
+  .companion-card { flex-direction: column; align-items: stretch; gap: 12px; }
+  .companion-preview { width: 100%; height: 160px; }
+  .companion-preview img { transform: scale(1.1); }
+  .provider-cards { flex-direction: column; }
+  .provider-card { min-width: 100%; }
+  .section-title { font-size: 1.2rem; }
+  .settings-header { margin-bottom: 20px; }
+  .title-group h1 { font-size: 1.5rem; }
+}
 </style>

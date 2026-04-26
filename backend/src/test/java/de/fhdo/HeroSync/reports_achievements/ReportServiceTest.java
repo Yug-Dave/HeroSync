@@ -12,6 +12,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class ReportServiceTest {
 
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private org.springframework.mail.javamail.JavaMailSender javaMailSender;
+
+
   @Autowired
   private ReportService reportService;
 
@@ -24,3 +28,4 @@ class ReportServiceTest {
     assertThat(result.completionsPerDay().size()).isEqualTo(7);
   }
 }
+
