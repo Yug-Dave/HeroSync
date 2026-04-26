@@ -31,6 +31,7 @@ HeroSync empowers high-performers to maintain long-term consistency through psyc
 | **Quest Management** | Lifecycle control for habits and **Epic Boss Battles**, featuring urgency filters and level-gating. |
 | **Achievement Synthesis**| Automatic generation of badges based on complex **behavioral threshold rules** (XP & Levels). |
 | **Holographic Analytics**| High-performance **Chart.js** integration for Weekly XP Gain and Peak performance tracking. |
+| **HeroMode AI**        | Multi-model AI companion (Gemini, OpenAI, Groq) offering personalized quest advice. |
 | **API Ecosystem** | Unified **REST and GraphQL** gateway for high-speed client-side data retrieval and parity. |
 
 ---

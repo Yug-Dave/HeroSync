@@ -40,6 +40,17 @@ class Report {
   +ReportDto monthly(user, year, month)
 }
 
+class AiChatService {
+  +String processUserMessage(user, request)
+}
+
+class AiProviderChoice {
+  <<enumeration>>
+  OPENAI
+  GEMINI
+  GROQ
+}
+
 class Habit {
   +Long id
   +String name
@@ -125,6 +136,9 @@ User ..> Report : generates
 Achievement "1" -- "0..*" UnlockedAchievement : defined by
 
 Goal ..> GoalStatus
+
+User ..> AiChatService : interacts
+AiChatService ..> AiProviderChoice : uses
 
 ```
 
