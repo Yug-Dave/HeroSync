@@ -25,12 +25,19 @@ public class ProfileService {
     String bio = (profile != null) ? profile.getBio() : null;
     String avatar = (profile != null) ? profile.getAvatar() : null;
 
+    String companionChoice = (profile != null && profile.getCompanionChoice() != null)
+        ? profile.getCompanionChoice().name() : "SYNC";
+    String aiProvider = (profile != null && profile.getAiProvider() != null)
+        ? profile.getAiProvider().name() : "CLAUDE";
+
     return new ProfileDto(
       user.getUserId(),
       user.getName(),
       user.getEmail(),
       bio,
-      avatar
+      avatar,
+      companionChoice,
+      aiProvider
     );
   }
   @Transactional
@@ -47,12 +54,16 @@ public class ProfileService {
       profile.setBio(bio);
     }
 
+    String companionChoice2 = (profile.getCompanionChoice() != null) ? profile.getCompanionChoice().name() : "SYNC";
+    String aiProvider2 = (profile.getAiProvider() != null) ? profile.getAiProvider().name() : "CLAUDE";
     return new ProfileDto(
       user.getUserId(),
       user.getName(),
       user.getEmail(),
       profile.getBio(),
-      profile.getAvatar()
+      profile.getAvatar(),
+      companionChoice2,
+      aiProvider2
     );
   }
 
