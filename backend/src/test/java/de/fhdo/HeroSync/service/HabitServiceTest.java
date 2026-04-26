@@ -44,7 +44,7 @@ class HabitServiceTest {
     }
 
     @Test
-    void createDto_ShouldCalculateXPBasedOnName() {
+    void createDto_ShouldUseProvidedXP() {
         // Arrange
         String name = "Drink Water";
         when(habitRepository.save(any(Habit.class))).thenAnswer(i -> i.getArguments()[0]);
@@ -55,7 +55,7 @@ class HabitServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(name, result.getName());
-        assertTrue(result.getXpValue() >= 50 && result.getXpValue() <= 150);
+        assertEquals(200, result.getXpValue());
         verify(habitRepository, times(1)).save(any(Habit.class));
     }
 
