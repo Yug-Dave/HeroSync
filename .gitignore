@@ -37,3 +37,13 @@ Wiki/docs/*.jpg
 # --- Custom Temp ---
 HeroSync/.temp_img_processing/
 .temp_img_processing/
+
+# Secrets — never commit
+.env
+*.env
+application-prod.properties
+application-local.properties
+application-secret.properties
+
+# Keep .env.example — it is safe to commit
+!.env.example
