@@ -1,30 +1,31 @@
 <script setup>
 import { ref } from 'vue';
 import { ChevronLeft, ChevronRight, Zap, Shield, Target } from 'lucide-vue-next';
+import AppFooter from './AppFooter.vue';
 
 const companions = [
   {
-    name: "Omega",
+    name: "Sync",
     type: "The Strategist",
-    desc: "Minimalist and precise. Omega analyzes your data to find the 1% improvements that lead to exponential growth.",
+    desc: "Minimalist and precise. Sync analyzes your data to find the 1% improvements that lead to exponential growth.",
     image: "/companion_omega.png",
     color: "#3b82f6",
     icon: Target,
     stats: { logic: 98, empathy: 45, energy: 88 }
   },
   {
-    name: "Kaelen",
+    name: "Aura",
     type: "The Empathetic Guide",
-    desc: "Soft and supportive. Kaelen focuses on your mental well-being, ensuring you don't burn out while chasing your goals.",
+    desc: "Soft and supportive. Aura focuses on your mental well-being, ensuring you don't burn out while chasing your goals.",
     image: "/companion_kaelen.png",
     color: "#8b5cf6",
     icon: Shield,
     stats: { logic: 72, empathy: 99, energy: 65 }
   },
   {
-    name: "Rex",
+    name: "Volt",
     type: "The High-Energy Motivator",
-    desc: "Loud and disciplined. Rex is for those who need a push. He turns every habit into a high-stakes competition.",
+    desc: "Loud and disciplined. Volt is for those who need a push. He turns every habit into a high-stakes competition.",
     image: "/companion_rex.png",
     color: "#f97316",
     icon: Zap,
@@ -89,14 +90,19 @@ function prev() { activeIndex.value = (activeIndex.value - 1 + companions.length
         </transition>
       </div>
     </div>
+
+    <!-- Footer integrated at the bottom of the section -->
+    <div class="footer-wrap">
+      <AppFooter />
+    </div>
   </section>
 </template>
 
 <style scoped>
 .companion-section {
-  height: 100vh; width: 100%;
-  display: flex; align-items: center; justify-content: center;
-  padding: 100px 5vw 40px;
+  min-height: 100vh; width: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 100px 5vw 0; position: relative;
 }
 
 .split-container {
@@ -160,6 +166,8 @@ function prev() { activeIndex.value = (activeIndex.value - 1 + companions.length
   .stats-list { width: 100%; }
   .char-cta { justify-content: center; }
 }
+
+.footer-wrap { width: 100%; margin-top: auto; }
 
 .theme-light .companion-card { background: rgba(255, 255, 255, 0.7); border-color: #e2e8f0; }
 
