@@ -20,13 +20,8 @@ HeroSync allows users to track their habits, set ambitious goals, and face "Boss
 - **Goal System & Boss Battles**: Set goals linked to habits. Mark high-priority goals as "Bosses" for greater rewards and a more challenging visual experience.
 - **Achievement Vault**: Unlock unique badges based on your performance, streaks, and milestones.
 - **Hero Profile**: Customize your 3D avatar (via Avaturn) and watch your hero grow as you gain XP.
-<<<<<<< HEAD
 - **HeroMode AI**: Multi-model AI companion (Gemini, OpenAI, Groq) offering personalized quest advice and dynamic motivation.
 - **Production-Ready Docker Pipeline**: Pre-configured Nginx reverse proxy and containerized microservices for instant, secure VPS deployment.
-=======
-- **Production-Ready Docker Pipeline**: Pre-configured Nginx reverse proxy and containerized microservices for instant, secure VPS deployment.
-
->>>>>>> origin/main
 ## ⚙ Tech Stack
 
 | Layer | Technologies |
@@ -73,10 +68,7 @@ graph TD
 HeroSync follows a **Modular Monolith** pattern with a clean separation of concerns:
 - **Hybrid API Layer**: Combines the efficiency of **GraphQL** for complex, nested dashboard data with the simplicity of **REST** for standard CRUD operations.
 - **Cinematic UI/UX**: Implemented a unified **Glassmorphic Design System** using native CSS variables and BEM methodology, ensuring 100% theme consistency without third-party styling overhead.
-<<<<<<< HEAD
 - **Context-Aware AI Integration**: Built a modular `AiProviderChoice` system to seamlessly toggle between multiple LLMs (Gemini, OpenAI, Groq), injecting live user context (XP, Habits, Streaks) for highly personalized companionship.
-=======
->>>>>>> origin/main
 - **3D Avatar Pipeline**: Successfully bridged 3D model state (Avaturn) with relational data, allowing for a personalized, persistent hero presence.
 
 ### ✦ Performance & Scalability
