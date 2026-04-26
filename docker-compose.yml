@@ -31,13 +31,14 @@ services:
     env_file:
       - .env
     environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/herosync
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
       - GROQ_API_KEY=${GROQ_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - DB_URL=jdbc:mysql://db:3306/herosync
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
       - SPRING_PROFILES_ACTIVE=prod
+      - JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom -Xms128m -Xmx384m -XX:+UseContainerSupport -XX:+UseSerialGC -XX:TieredStopAtLevel=1"
     ports:
       - "8080:8080"
 

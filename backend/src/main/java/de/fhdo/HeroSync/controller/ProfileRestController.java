@@ -107,3 +107,9 @@ public class ProfileRestController {
     return userRepository.findByEmail(email).orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED));
   }
 }
+  private User requireUser(Authentication auth) {
+    if (auth == null) throw new ResponseStatusException(UNAUTHORIZED);
+    String email = (auth.getPrincipal() instanceof UserDetails ud) ? ud.getUsername() : auth.getPrincipal().toString();
+    return userRepository.findByEmail(email).orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED));
+  }
+}
