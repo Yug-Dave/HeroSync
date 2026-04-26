@@ -11,6 +11,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class AchievementServiceTest {
 
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private org.springframework.mail.javamail.JavaMailSender javaMailSender;
+
+
   @Autowired
   private AchievementService achievementService;
 
@@ -27,3 +31,4 @@ class AchievementServiceTest {
     assertThat(result).isNotNull();
   }
 }
+

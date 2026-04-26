@@ -25,9 +25,19 @@ public class Profile {
   @JoinColumn(name = "user_id", nullable = false, unique = true)
   private User user;
 
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 20)
+  private CompanionChoice companionChoice = CompanionChoice.SYNC;
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 20)
+  private AiProviderChoice aiProvider = AiProviderChoice.GROQ;
+
   public Profile(User user, String bio, String avatar) {
     this.user = user;
     this.bio = bio;
     this.avatar = avatar;
+    this.companionChoice = CompanionChoice.SYNC;
+    this.aiProvider = AiProviderChoice.GROQ;
   }
 }

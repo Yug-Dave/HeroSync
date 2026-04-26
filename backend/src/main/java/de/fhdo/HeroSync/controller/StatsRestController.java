@@ -32,8 +32,9 @@ public class StatsRestController {
   public ResponseEntity<List<Map<String, Object>>> getXpHistory(Authentication authentication) {
     User user = requireAuthenticatedUser(authentication);
 
-    // Fetch REAL data from the database
-    List<Map<String, Object>> history = activityRepository.getWeeklyXpHistory(user.getUserId());
+    // Fetch REAL data from the database (last 7 days)
+    java.time.LocalDate sevenDaysAgo = java.time.LocalDate.now().minusDays(7);
+    List<Map<String, Object>> history = activityRepository.getWeeklyXpHistory(user.getUserId(), sevenDaysAgo);
 
     return ResponseEntity.ok(history);
   }

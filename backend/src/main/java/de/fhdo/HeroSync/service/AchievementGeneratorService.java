@@ -28,7 +28,7 @@ public class AchievementGeneratorService {
     this.activityRepository = activityRepository;
   }
 
-  @Transactional
+  @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
   public void generateForLevel(User user, int level) {
     List<Habit> activeHabits = habitRepository.findByUserAndArchivedFalse(user);
     

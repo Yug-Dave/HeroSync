@@ -1,18 +1,18 @@
 # --- Backend (Spring Boot) ---
-HeroSync/backend/target/
-HeroSync/backend/.mvn/
-HeroSync/backend/*.iml
-HeroSync/backend/.project
-HeroSync/backend/.classpath
-HeroSync/backend/.settings/
-HeroSync/backend/bin/
+backend/target/
+backend/.mvn/
+backend/*.iml
+backend/.project
+backend/.classpath
+backend/.settings/
+backend/bin/
 
 # --- Frontend (Vue 3) ---
-HeroSync/frontend/frontend-ui/node_modules/
-HeroSync/frontend/frontend-ui/dist/
-HeroSync/frontend/frontend-ui/.env.local
-HeroSync/frontend/frontend-ui/.env.*.local
-HeroSync/frontend/frontend-ui/package-lock.json
+frontend/frontend-ui/node_modules/
+frontend/frontend-ui/dist/
+frontend/frontend-ui/.env.local
+frontend/frontend-ui/.env.*.local
+frontend/frontend-ui/package-lock.json
 
 # --- General IDEs ---
 .idea/
@@ -35,5 +35,14 @@ Wiki/docs/*.png
 Wiki/docs/*.jpg
 
 # --- Custom Temp ---
-HeroSync/.temp_img_processing/
 .temp_img_processing/
+
+# Secrets — never commit
+.env
+*.env
+application-prod.properties
+application-local.properties
+application-secret.properties
+
+# Keep .env.example — it is safe to commit
+!.env.example

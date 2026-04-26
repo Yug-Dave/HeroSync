@@ -9,6 +9,8 @@ public class UpdateProfileRequest {
 
   private String bio;
   private String avatar;
+  private String companionChoice;
+  private String aiProvider;
 
   public UpdateProfileRequest() {}
 
@@ -26,4 +28,10 @@ public class UpdateProfileRequest {
 
   public String getAvatar() { return avatar; }
   public void setAvatar(String avatar) { this.avatar = avatar; }
+
+  public String getCompanionChoice() { return companionChoice; }
+  public void setCompanionChoice(String companionChoice) { this.companionChoice = companionChoice; }
+
+  public String getAiProvider() { return aiProvider; }
+  public void setAiProvider(String aiProvider) { this.aiProvider = aiProvider; }
 }

@@ -5,13 +5,12 @@ import Features from '../components/Features.vue';
 import Methodology from '../components/Methodology.vue';
 import DashboardPreview from '../components/DashboardPreview.vue';
 import CompanionSlider from '../components/CompanionSlider.vue';
-import Pricing from '../components/Pricing.vue';
 import AppLogo from '../components/AppLogo.vue';
 import { heroConfig } from '../utils/config';
 
 const activeSectionIndex = ref(0);
 const isTransitioning = ref(false);
-const sections = ['Hero', 'Features', 'Method', 'Preview', 'Companions', 'Pricing'];
+const sections = ['Hero', 'Features', 'Method', 'Preview', 'Companions'];
 
 const isMobile = ref(false);
 const mobileMenuOpen = ref(false);
@@ -49,6 +48,8 @@ function goToSection(index) {
 function handleWheel(e) {
   if (isMobile.value || isTransitioning.value) return;
   if (Math.abs(e.deltaY) < 30) return;
+  
+  e.preventDefault();
   if (e.deltaY > 0) goToSection(activeSectionIndex.value + 1);
   else goToSection(activeSectionIndex.value - 1);
 }
@@ -153,7 +154,6 @@ const bgParallax = computed(() => `translateY(-${activeSectionIndex.value * 15}v
         <section class="slide" :class="{ active: activeSectionIndex === 2 || isMobile }"><Methodology /></section>
         <section class="slide" :class="{ active: activeSectionIndex === 3 || isMobile }"><DashboardPreview /></section>
         <section class="slide" :class="{ active: activeSectionIndex === 4 || isMobile }"><CompanionSlider /></section>
-        <section class="slide" :class="{ active: activeSectionIndex === 5 || isMobile }"><Pricing /></section>
       </main>
     </div>
   </div>

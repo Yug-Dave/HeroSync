@@ -64,7 +64,11 @@ public class DashboardService {
   }
 
   public void triggerAchievementGeneration(User user, int level) {
-    achievementGenerator.generateForLevel(user, level);
+    try {
+      achievementGenerator.generateForLevel(user, level);
+    } catch (org.springframework.dao.DataIntegrityViolationException e) {
+      // Ignore concurrent insertion attempt
+    }
   }
 
   public User findUserByEmail(String email) {
@@ -179,7 +183,11 @@ public class DashboardService {
     int levelAfter = calculateLevel(xpAfter);
 
     if (levelAfter > levelBefore) {
-      achievementGenerator.generateForLevel(user, levelAfter);
+      try {
+        achievementGenerator.generateForLevel(user, levelAfter);
+      } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        // Ignore concurrent insertion
+      }
     }
   }
 
@@ -234,7 +242,11 @@ public class DashboardService {
     int xp = calculateTotalXP(user.getUserId());
     
     int level = calculateLevel(xp);
-    achievementGenerator.generateForLevel(user, level);
+    try {
+      achievementGenerator.generateForLevel(user, level);
+    } catch (org.springframework.dao.DataIntegrityViolationException e) {
+      // Ignore concurrent insertion attempt
+    }
 
     String avatar = (user.getProfile() != null) ? user.getProfile().getAvatar() : null;
     int habitsDone = calculateTotalHabitsDone(activities);
