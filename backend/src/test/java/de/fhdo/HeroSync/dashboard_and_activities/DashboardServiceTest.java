@@ -18,6 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class DashboardServiceTest {
 
+  @org.mockito.Mock
+  private de.fhdo.HeroSync.service.AchievementGeneratorService achievementGenerator;
+
   @InjectMocks
   private DashboardService dashboardService;
 
