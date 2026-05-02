@@ -38,7 +38,7 @@ public class GeminiProviderService implements AiProviderService {
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             String url = UriComponentsBuilder
-                .fromHttpUrl("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent")
+                .fromHttpUrl("https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent")
                 .queryParam("key", apiKey)
                 .toUriString();
 

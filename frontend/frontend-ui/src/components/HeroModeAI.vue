@@ -318,7 +318,7 @@ function handleKey(e) {
   .hero-ai-sidebar {
     position: sticky;
     top: 0;
-    height: 100vh;
+    height: 100dvh;
     z-index: 100;
     background: rgba(13, 17, 23, 0.8);
     backdrop-filter: blur(20px);
@@ -355,7 +355,7 @@ function handleKey(e) {
   }
   .hero-ai-sidebar.is-expanded {
     top: 0; left: 0; right: 0; bottom: 0;
-    height: 100vh;
+    height: 100dvh;
     width: 100%;
     pointer-events: all;
     background: var(--bg) !important;
@@ -650,6 +650,7 @@ function handleKey(e) {
 
 /* ── Footer / Input ── */
 .sidebar-footer { padding: 16px; border-top: 1px solid var(--border); }
+@media (max-width: 768px) { .sidebar-footer { padding-bottom: calc(16px + env(safe-area-inset-bottom)); } }
 .input-container { display: flex; gap: 8px; position: relative; }
 .sidebar-input {
   flex: 1;
