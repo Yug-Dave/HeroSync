@@ -71,6 +71,9 @@ async function onSubmit() {
   try {
     await register({ name: name.value, email: email.value, password: password.value });
     await login({ email: email.value, password: password.value });
+    // Signal the dashboard to always show the tour for new signups
+    localStorage.setItem('hs_new_signup', '1');
+    localStorage.removeItem('hs_tour_done');
     window.location.href = "/dashboard";
   } catch (err) { serverError.value = "Registration failed."; }
   finally { loading.value = false; }
