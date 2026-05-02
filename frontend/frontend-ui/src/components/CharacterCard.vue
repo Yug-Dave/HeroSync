@@ -13,10 +13,13 @@ const props = defineProps({
 });
 
 const characterData = computed(() => {
-  if (props.level >= 4) return { icon: 'legendary', title: 'Dragon Slayer', cls: 'tier-legendary', color: '#2563eb' };
-  if (props.level >= 3) return { icon: 'epic',      title: 'Warrior',       cls: 'tier-epic',      color: '#3b82f6' };
-  if (props.level >= 2) return { icon: 'rare',      title: 'Guardian',      cls: 'tier-rare',      color: '#60a5fa' };
-  return                       { icon: 'common',    title: 'Apprentice',    cls: 'tier-common',    color: '#93c5fd' };
+  const lv = props.level;
+  if (lv >= 30) return { icon: 'prismatic', title: 'Dragon Slayer', cls: 'tier-prismatic',  color: '#f59e0b', glow: 'rgba(245,158,11,.55)', ring: 'prismatic-ring' };
+  if (lv >= 20) return { icon: 'legendary', title: 'Legend',        cls: 'tier-legendary',  color: '#ef4444', glow: 'rgba(239,68,68,.45)',  ring: 'legend-ring'   };
+  if (lv >= 15) return { icon: 'champion',  title: 'Champion',      cls: 'tier-champion',   color: '#eab308', glow: 'rgba(234,179,8,.45)', ring: 'champion-ring' };
+  if (lv >= 10) return { icon: 'epic',      title: 'Warrior',       cls: 'tier-epic',       color: '#8b5cf6', glow: 'rgba(139,92,246,.4)', ring: 'warrior-ring'  };
+  if (lv >=  5) return { icon: 'rare',      title: 'Guardian',      cls: 'tier-rare',       color: '#3b82f6', glow: 'rgba(59,130,246,.4)', ring: 'guardian-ring' };
+  return                { icon: 'common',   title: 'Apprentice',    cls: 'tier-common',     color: '#94a3b8', glow: 'rgba(148,163,184,.2)',ring: ''              };
 });
 
 const effectiveSeed = computed(() => {
@@ -136,7 +139,7 @@ const handleCardMouseMove = (e) => {
     <div class="card-main-layout">
       <!-- Left: Avatar Section -->
       <div class="avatar-section">
-        <div class="avatar-ring clickable" @click="open3DModel" :style="{ borderColor: `${characterData.color}44` }">
+        <div class="avatar-ring clickable" :class="characterData.ring" @click="open3DModel" :style="{ borderColor: `${characterData.color}55` }">
           <img :src="getAvatarImageUrl(effectiveSeed)" class="avatar-img" alt="Hero Avatar" />
           <div class="hover-scan" :style="{ background: `${characterData.color}22` }">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 20px; height: 20px;">
@@ -340,6 +343,20 @@ const handleCardMouseMove = (e) => {
   box-shadow: var(--shadow);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+
+/* Tier-specific card border glow on hover */
+.character-card.tier-common:hover    { border-color: #94a3b8; box-shadow: var(--shadow-lg), 0 0 20px rgba(148,163,184,.15); }
+.character-card.tier-rare:hover      { border-color: #3b82f6; box-shadow: var(--shadow-lg), 0 0 24px rgba(59,130,246,.25); }
+.character-card.tier-epic:hover      { border-color: #8b5cf6; box-shadow: var(--shadow-lg), 0 0 24px rgba(139,92,246,.3); }
+.character-card.tier-champion:hover  { border-color: #eab308; box-shadow: var(--shadow-lg), 0 0 28px rgba(234,179,8,.3); }
+.character-card.tier-legendary:hover { border-color: #ef4444; box-shadow: var(--shadow-lg), 0 0 28px rgba(239,68,68,.3); }
+.character-card.tier-prismatic:hover { border-color: #f59e0b; box-shadow: var(--shadow-lg), 0 0 40px rgba(245,158,11,.4); }
+.character-card.tier-prismatic { animation: prismaticCard 4s ease-in-out infinite; }
+@keyframes prismaticCard {
+  0%,100% { border-color: rgba(245,158,11,.4); box-shadow: 0 0 20px rgba(245,158,11,.1); }
+  33%     { border-color: rgba(239,68,68,.4);  box-shadow: 0 0 20px rgba(239,68,68,.1); }
+  66%     { border-color: rgba(139,92,246,.4); box-shadow: 0 0 20px rgba(139,92,246,.1); }
+}
 .character-card::before {
   content: "";
   position: absolute; inset: 0;
@@ -408,6 +425,27 @@ const handleCardMouseMove = (e) => {
   overflow: hidden; cursor: pointer; position: relative;
   z-index: 2;
   box-shadow: 0 4px 15px rgba(var(--accent-rgb), 0.1);
+  transition: box-shadow .3s;
+}
+/* Tier ring glow animations */
+.guardian-ring  { box-shadow: 0 0 14px rgba(59,130,246,.4),  0 0 0 2px rgba(59,130,246,.15)  !important; }
+.warrior-ring   { box-shadow: 0 0 18px rgba(139,92,246,.5),  0 0 0 2px rgba(139,92,246,.2)   !important; }
+.champion-ring  { box-shadow: 0 0 20px rgba(234,179,8,.5),   0 0 0 2px rgba(234,179,8,.2)    !important; animation: champRing 2s ease-in-out infinite; }
+.legend-ring    { box-shadow: 0 0 22px rgba(239,68,68,.5),   0 0 0 2px rgba(239,68,68,.2)    !important; animation: legendRing 2.5s ease-in-out infinite; }
+.prismatic-ring { animation: prismaticRing 3s linear infinite !important; border-width: 3px !important; }
+@keyframes champRing {
+  0%,100% { box-shadow: 0 0 16px rgba(234,179,8,.4), 0 0 0 2px rgba(234,179,8,.15); }
+  50%     { box-shadow: 0 0 28px rgba(234,179,8,.7), 0 0 0 3px rgba(234,179,8,.3);  }
+}
+@keyframes legendRing {
+  0%,100% { box-shadow: 0 0 18px rgba(239,68,68,.4), 0 0 0 2px rgba(239,68,68,.15); }
+  50%     { box-shadow: 0 0 32px rgba(239,68,68,.7), 0 0 0 3px rgba(239,68,68,.3);  }
+}
+@keyframes prismaticRing {
+  0%   { border-color: #f59e0b; box-shadow: 0 0 22px rgba(245,158,11,.6), 0 0 0 3px rgba(245,158,11,.2); }
+  33%  { border-color: #ef4444; box-shadow: 0 0 22px rgba(239,68,68,.6),  0 0 0 3px rgba(239,68,68,.2);  }
+  66%  { border-color: #8b5cf6; box-shadow: 0 0 22px rgba(139,92,246,.6), 0 0 0 3px rgba(139,92,246,.2); }
+  100% { border-color: #f59e0b; box-shadow: 0 0 22px rgba(245,158,11,.6), 0 0 0 3px rgba(245,158,11,.2); }
 }
 .avatar-img { 
   width: 100%; height: 100%; object-fit: cover; 

@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, onUnmounted, ref, computed } from 'vue';
-import HabitsAddEditModal from '../components/HabitsAddEditModal.vue';
+import AddHabitModal from '../components/AddHabitModal.vue';
 import { http } from '../api/http';
 import { createHabit, deleteHabit, listHabits, updateHabit } from '../api/habits';
 import { playSound } from '../utils/config';
@@ -272,12 +272,10 @@ onUnmounted(() => {
       </transition>
     </Teleport>
 
-    <HabitsAddEditModal
+    <AddHabitModal
       :isOpen="showModal"
       :editMode="isEditing"
       :initialData="habitToEdit"
-      :saving="saving"
-      :error="modalError"
       @close="showModal = false"
       @save="saveHabit"
     />

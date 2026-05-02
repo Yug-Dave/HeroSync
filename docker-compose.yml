@@ -38,7 +38,7 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - SPRING_PROFILES_ACTIVE=prod
-      - JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom -Xms128m -Xmx384m -XX:+UseContainerSupport -XX:+UseSerialGC -XX:TieredStopAtLevel=1"
+      - JAVA_OPTS=-Djava.security.egd=file:/dev/./urandom -Xms128m -Xmx384m -XX:+UseContainerSupport -XX:+UseSerialGC -XX:TieredStopAtLevel=1
     ports:
       - "8080:8080"
 

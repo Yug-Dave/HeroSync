@@ -1,10 +1,12 @@
 package de.fhdo.HeroSync.controller;
 
-import de.fhdo.HeroSync.dto.AiChatRequest;
-import de.fhdo.HeroSync.dto.AiChatResponse;
+import de.fhdo.HeroSync.dto.*;
 import de.fhdo.HeroSync.entity.User;
 import de.fhdo.HeroSync.repository.UserRepository;
 import de.fhdo.HeroSync.service.AiChatService;
+import de.fhdo.HeroSync.service.QuestClassifierService;
+import de.fhdo.HeroSync.dto.AiChatRequest;
+import de.fhdo.HeroSync.dto.AiChatResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,12 +19,16 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @RequestMapping("/ai")
 public class AiChatController {
 
-    private final AiChatService aiChatService;
-    private final UserRepository userRepository;
+    private final AiChatService           aiChatService;
+    private final UserRepository          userRepository;
+    private final QuestClassifierService  questClassifier;
 
-    public AiChatController(AiChatService aiChatService, UserRepository userRepository) {
-        this.aiChatService = aiChatService;
-        this.userRepository = userRepository;
+    public AiChatController(AiChatService aiChatService,
+                            UserRepository userRepository,
+                            QuestClassifierService questClassifier) {
+        this.aiChatService   = aiChatService;
+        this.userRepository  = userRepository;
+        this.questClassifier = questClassifier;
     }
 
     @PostMapping(value = "/chat",
@@ -31,8 +37,7 @@ public class AiChatController {
     public ResponseEntity<AiChatResponse> chat(Authentication auth,
                                                @RequestBody AiChatRequest request) {
         User user = requireUser(auth);
-        AiChatResponse response = aiChatService.chat(user, request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(aiChatService.chat(user, request));
     }
 
     @PostMapping(value = "/diagnostics", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,6 +49,20 @@ public class AiChatController {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response.getReply());
+    }
+
+    /**
+     * Classifies a quest into EASY / STANDARD / HARD / ELITE using AI.
+     * Returns XP range and suggestion. Authentication required.
+     */
+    @PostMapping(value = "/classify-quest",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<QuestClassifyResponse> classifyQuest(
+            Authentication auth,
+            @RequestBody QuestClassifyRequest request) {
+        requireUser(auth);
+        return ResponseEntity.ok(questClassifier.classify(request.getName(), request.getDescription()));
     }
 
     private User requireUser(Authentication auth) {
