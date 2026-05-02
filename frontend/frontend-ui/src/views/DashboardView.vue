@@ -1,11 +1,13 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { listGoals, createGoal } from '../api/goals';
 import GoalsAddEditModal from '../components/GoalsAddEditModal.vue';
 import AddHabitModal from '../components/AddHabitModal.vue';
 import DashboardAchievementsPanel from '../components/DashboardAchivementsPanel.vue';
 import CharacterCard from '../components/CharacterCard.vue';
+import OnboardingTour from '../components/OnboardingTour.vue';
+import LevelUpCeremony from '../components/LevelUpCeremony.vue';
 import { playSound } from '../utils/config';
 import { useUserStore } from '../stores/user';
 
@@ -38,6 +40,24 @@ const userStore = useUserStore();
 const companionChoice = computed(() => userStore.companionChoice);
 const battlePlan = ref('');
 
+// ── Level-Up Ceremony ──────────────────────────────────────────────────────
+const showLevelUp  = ref(false);
+const levelUpTo    = ref(1);
+const levelUpFrom  = ref(1);
+
+function checkLevelUp(newXp) {
+  const newLevel  = Math.max(1, Math.floor(newXp / 2000) + 1);
+  const storedLv  = parseInt(localStorage.getItem('hs_last_level') || '1', 10);
+  if (newLevel > storedLv) {
+    levelUpFrom.value = storedLv;
+    levelUpTo.value   = newLevel;
+    localStorage.setItem('hs_last_level', String(newLevel));
+    setTimeout(() => { showLevelUp.value = true; }, 600);
+  } else if (!localStorage.getItem('hs_last_level')) {
+    localStorage.setItem('hs_last_level', String(newLevel));
+  }
+}
+
 const companionMap = {
   SYNC: { image: '/companion_omega.png', color: '#3b82f6', name: 'SYNC' },
   AURA: { image: '/companion_kaelen.png', color: '#8b5cf6', name: 'AURA' },
@@ -60,6 +80,44 @@ const streakWeather = computed(() => {
 // ── Computed ───────────────────────────────────────────
 const completedCount = computed(() => habits.value.filter(h => h.completed).length);
 const totalHabits    = computed(() => habits.value.length);
+
+// Feature 1: Per-quest individual streaks from activity history
+const habitStreaks = computed(() => {
+  const streakMap = {};
+  if (!history.value.length) return streakMap;
+  const grouped = {};
+  history.value.forEach(act => {
+    if (!grouped[act.habitId]) grouped[act.habitId] = [];
+    grouped[act.habitId].push(act);
+  });
+  Object.keys(grouped).forEach(hid => {
+    const acts = grouped[hid].sort((a, b) => new Date(b.date) - new Date(a.date));
+    let streak = 0;
+    let prevDate = null;
+    for (const act of acts) {
+      if (act.completions <= 0) break;
+      const d = new Date(act.date);
+      if (!prevDate) { streak = 1; prevDate = d; continue; }
+      const diff = (prevDate - d) / 86400000;
+      if (diff <= 1.5) { streak++; prevDate = d; } else break;
+    }
+    streakMap[hid] = streak;
+  });
+  return streakMap;
+});
+
+// Feature 2: Weekly Boss Battle from goals list
+const activeBoss = computed(() => goals.value.find(g => g.isBoss && g.status === 'ACTIVE') || null);
+
+// Feature 3: Companion mood class based on streak
+const companionMood = computed(() => {
+  const s = userStore.streak;
+  if (s >= 14) return 'mood-legendary';
+  if (s >= 7)  return 'mood-blazing';
+  if (s >= 3)  return 'mood-warm';
+  if (s >= 1)  return 'mood-cool';
+  return 'mood-cold';
+});
 
 // ── API helpers ────────────────────────────────────────
 const API_BASE = '/api';
@@ -101,6 +159,8 @@ async function fetchInitialData() {
       
       // Sync store
       userStore.updateStats(data.totalXP, data.currentStreak);
+      // Check for level-up
+      checkLevelUp(data.totalXP || 0);
     }
   } catch (e) { console.warn('Auth check failed'); }
   await fetchHabits();
@@ -207,6 +267,27 @@ const refreshAchievements = async () => {
   if (achievementsRef.value) await achievementsRef.value.loadAll();
 };
 
+// ── Reflection Prompt (Habit Verification) ────────────────
+const showReflection    = ref(false);
+const reflectionHabit   = ref(null);
+const reflectionText    = ref('');
+const reflectionLog     = ref(JSON.parse(localStorage.getItem('hs_reflections') || '[]'));
+
+function saveReflection() {
+  if (reflectionText.value.trim()) {
+    const entry = {
+      habitId: reflectionHabit.value?.id,
+      habitName: reflectionHabit.value?.name,
+      text: reflectionText.value.trim(),
+      date: new Date().toISOString().split('T')[0]
+    };
+    reflectionLog.value.push(entry);
+    localStorage.setItem('hs_reflections', JSON.stringify(reflectionLog.value.slice(-100)));
+  }
+  showReflection.value = false;
+  reflectionText.value = '';
+}
+
 const toggleCheck = async (habit, index, e) => {
   const now   = new Date();
   const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
@@ -225,6 +306,10 @@ const toggleCheck = async (habit, index, e) => {
       xpFlashAmt.value = habit.xpValue || 60;
       showXpFlash.value = true;
       setTimeout(() => { showXpFlash.value = false; }, 1800);
+      // Show reflection prompt
+      reflectionHabit.value = habit;
+      reflectionText.value = '';
+      setTimeout(() => { showReflection.value = true; }, 400);
     }
       
     if (e && e.target) {
@@ -287,7 +372,6 @@ const saveGoal = async (payload) => {
   }
 };
 
-import { watch } from 'vue';
 watch(companionChoice, () => {
   fetchBattlePlan(true); // Force refresh on switch
 });
@@ -298,10 +382,28 @@ const formatDate = (d) => ({
 });
 const formatSimpleDate = (d) => d.substring(5);
 
+// ── Onboarding Tour ──────────────────────────────────────────────────────
+const showTour = ref(false);
+
+function checkAndShowTour() {
+  const isNewSignup = localStorage.getItem('hs_new_signup');
+  const tourDone    = localStorage.getItem('hs_tour_done');
+
+  if (isNewSignup) {
+    // Fresh signup — always show the tour, then clear the signup flag
+    localStorage.removeItem('hs_new_signup');
+    setTimeout(() => { showTour.value = true; }, 800);
+  } else if (!tourDone) {
+    // Returning user who hasn't completed the tour yet
+    setTimeout(() => { showTour.value = true; }, 800);
+  }
+}
+
 onMounted(async () => {
   fetchInitialData();
   window.addEventListener('refresh-dashboard', fetchInitialData);
   fetchBattlePlan();
+  checkAndShowTour();
 });
 </script>
 
@@ -314,6 +416,7 @@ onMounted(async () => {
           <!-- Top Hero & Stats Section -->
           <div class="dashboard-top-section">
             <div class="char-column">
+              <div data-tour-step="character">
               <CharacterCard 
                 :name="user.name"
                 :level="level"
@@ -329,38 +432,66 @@ onMounted(async () => {
                   </div>
                 </div>
               </CharacterCard>
+              </div>
 
-              <!-- Companion Motivation Card -->
-              <div class="motivation-card" :style="{ '--comp-color': companionColor }">
-                <div class="motivation-left">
-                  <div class="dash-avatar-frame" :style="{ borderColor: companionColor }">
-                    <img :src="currentDashboardAvatar" class="dash-avatar" />
-                  </div>
-                  <div class="comp-status">
-                    <span class="comp-dot"></span>
-                    System Online
+              <!-- Horizontal Scroll: Boss Battle + AI Companion Briefing -->
+              <div data-tour-step="companion" class="cards-hscroll">
+
+                <!-- Boss Battle Card (first, only when active) -->
+                <div v-if="activeBoss" class="hscroll-card boss-card">
+                  <div class="boss-card-inner">
+                    <div class="boss-header">
+                      <div class="boss-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M2 2l20 20"/></svg>
+                      </div>
+                      <span class="boss-label">WEEKLY BOSS</span>
+                      <span class="boss-deadline">Due {{ activeBoss.deadline }}</span>
+                    </div>
+                    <div class="boss-title">{{ activeBoss.title.replace('⚔ WEEKLY BOSS: ', '') }}</div>
+                    <p class="boss-desc">{{ activeBoss.description }}</p>
+                    <div class="boss-progress-wrap">
+                      <div class="boss-bar">
+                        <div class="boss-fill" :style="{ width: Math.min(100, (activeBoss.progressCount / activeBoss.targetCount) * 100) + '%' }"/>
+                      </div>
+                      <span class="boss-count">{{ activeBoss.progressCount }}/{{ activeBoss.targetCount }}</span>
+                    </div>
+                    <div class="boss-xp-badge">3× XP REWARD</div>
                   </div>
                 </div>
-                <div class="motivation-right">
-                  <div class="motivation-header">
-                    <span class="comp-name-label" :style="{ color: companionColor }">
-                      {{ companionName }}
-                    </span>
-                    <span class="motivation-tag">Daily Briefing</span>
+
+                <!-- AI Companion Briefing Card (always present) -->
+                <div class="hscroll-card companion-card" :class="companionMood" :style="{ '--comp-color': companionColor }">
+                  <div class="motivation-left">
+                    <div class="dash-avatar-frame" :class="companionMood" :style="{ borderColor: companionColor }">
+                      <img :src="currentDashboardAvatar" class="dash-avatar" />
+                    </div>
+                    <div class="comp-status">
+                      <span class="comp-dot"></span>
+                      System Online
+                    </div>
                   </div>
-                  <p class="motivation-text" v-if="battlePlan">{{ battlePlan }}</p>
-                  <p class="motivation-text placeholder" v-else>Initializing neural link...</p>
-                  
-                  <div class="streak-weather">
-                    <span class="weather-icon">{{ streakWeather.icon }}</span>
-                    <span class="weather-label" :style="{ color: streakWeather.color }">
-                      {{ streakWeather.label }}
-                    </span>
+                  <div class="motivation-right">
+                    <div class="motivation-header">
+                      <span class="comp-name-label" :style="{ color: companionColor }">
+                        {{ companionName }}
+                      </span>
+                      <span class="motivation-tag">Daily Briefing</span>
+                    </div>
+                    <p class="motivation-text" v-if="battlePlan">{{ battlePlan }}</p>
+                    <p class="motivation-text placeholder" v-else>Initializing neural link...</p>
+                    <div class="streak-weather">
+                      <span class="weather-icon">{{ streakWeather.icon }}</span>
+                      <span class="weather-label" :style="{ color: streakWeather.color }">
+                        {{ streakWeather.label }}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            </div>
-            <div class="stats-column">
+
+            </div><!-- /char-column -->
+
+            <div data-tour-step="stats" class="stats-column">
               <div class="stat-grid-mini">
                 <div class="stat-card" style="display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 16px;">
                   <div style="display: flex; align-items: center; gap: 12px;">
@@ -408,7 +539,7 @@ onMounted(async () => {
 
           <!-- Bottom Main Grid -->
           <div class="grid">
-            <div class="card span-4">
+            <div data-tour-step="quests" class="card span-4">
               <div class="card-inner">
                 <div class="section-head">
                   <div class="sec-title">
@@ -439,6 +570,11 @@ onMounted(async () => {
                         <div class="q-name" :class="{ 'q-done': habit.completed }">{{ habit.name }}</div>
                         <div class="q-desc" v-if="habit.description">{{ habit.description }}</div>
                       </div>
+                      <!-- Per-quest streak badge (Feature 1) -->
+                      <span v-if="habitStreaks[habit.id] >= 2" class="q-streak-badge">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s-6 5.5-6 10a6 6 0 0012 0C18 7.5 12 2 12 2zm0 14a2 2 0 01-2-2c0-2 2-4.5 2-4.5s2 2.5 2 4.5a2 2 0 01-2 2z"/></svg>
+                        {{ habitStreaks[habit.id] }}d
+                      </span>
                       <span class="q-xp">+{{ habit.xpValue }} XP</span>
                     </div>
                   </div>
@@ -446,7 +582,7 @@ onMounted(async () => {
               </div>
             </div>
 
-            <div class="card span-4">
+            <div data-tour-step="activity" class="card span-4">
               <div class="card-inner">
                 <div class="section-head mb-16">
                   <div class="sec-title">
@@ -471,7 +607,7 @@ onMounted(async () => {
               </div>
             </div>
 
-            <div class="card span-4">
+            <div data-tour-step="achievements" class="card span-4">
               <div class="card-inner no-scroll">
                 <div class="section-head mb-16">
                   <div class="sec-title">
@@ -487,7 +623,7 @@ onMounted(async () => {
             </div>
           </div>
 
-          <div class="quick-actions">
+          <div data-tour-step="quick-actions" class="quick-actions">
             <button class="qa-btn primary-qa" aria-label="Create New Quest" @click="openCreateModal">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               New Quest
@@ -512,6 +648,42 @@ onMounted(async () => {
 
     <AddHabitModal :isOpen="showModal" :editMode="isEditing" :initialData="habitToEdit" @close="showModal = false" @save="saveHabit" />
     <GoalsAddEditModal :isOpen="showGoalModal" mode="create" :initialData="null" :habits="habits" :saving="goalSaving" :error="goalError" @close="showGoalModal = false" @save="saveGoal" />
+    <OnboardingTour :active="showTour" @complete="showTour = false" @skip="showTour = false" />
+
+    <!-- Level-Up Ceremony -->
+    <LevelUpCeremony
+      v-if="showLevelUp"
+      :level="levelUpTo"
+      :prevLevel="levelUpFrom"
+      :name="user.name"
+      @done="showLevelUp = false"
+    />
+
+    <!-- Reflection Prompt Modal -->
+    <Transition name="reflect-pop">
+      <div v-if="showReflection" class="reflection-overlay">
+        <div class="reflection-card">
+          <div class="reflection-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          <h4 class="reflection-title">Quest Complete!</h4>
+          <p class="reflection-quest">{{ reflectionHabit?.name }}</p>
+          <p class="reflection-prompt">In one sentence — what did you actually do?</p>
+          <textarea
+            v-model="reflectionText"
+            class="reflection-input"
+            placeholder="e.g. Did 30 pushups at 7am before work..."
+            rows="2"
+            maxlength="120"
+            @keydown.enter.prevent="saveReflection"
+          />
+          <div class="reflection-actions">
+            <button class="reflect-skip" @click="saveReflection">Skip</button>
+            <button class="reflect-save" @click="saveReflection" :disabled="!reflectionText.trim()">Log It →</button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -948,4 +1120,229 @@ onMounted(async () => {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
 }
-</style>
+
+/* ── Horizontal Scroll Container ── */
+.cards-hscroll {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px;
+}
+.cards-hscroll::-webkit-scrollbar { height: 3px; }
+.cards-hscroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.hscroll-card {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  width: 100%;
+  min-width: 280px;
+}
+
+/* ── Companion Card (inside scroll) ── */
+.companion-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.companion-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at left center, var(--comp-color, #3b82f6) 0%, transparent 60%);
+  opacity: 0.04; pointer-events: none;
+}
+
+/* Feature 3: Companion Mood States */
+.companion-card.mood-cold   { border-color: rgba(100,116,139,.4); }
+.companion-card.mood-cool   { border-color: var(--border2); }
+.companion-card.mood-warm   { border-color: rgba(59,130,246,.4); }
+.companion-card.mood-blazing{ border-color: rgba(234,179,8,.5); box-shadow: 0 0 20px rgba(234,179,8,.1); }
+.companion-card.mood-legendary {
+  border-color: rgba(245,158,11,.6);
+  box-shadow: 0 0 30px rgba(245,158,11,.15), 0 0 60px rgba(245,158,11,.06);
+  animation: legendaryPulse 3s ease-in-out infinite;
+}
+@keyframes legendaryPulse {
+  0%,100% { box-shadow: 0 0 20px rgba(245,158,11,.12); }
+  50%     { box-shadow: 0 0 40px rgba(245,158,11,.25); }
+}
+
+.dash-avatar-frame.mood-cold     { opacity: 0.75; filter: saturate(0.4) brightness(0.8); }
+.dash-avatar-frame.mood-cool     { filter: none; }
+.dash-avatar-frame.mood-warm     { filter: saturate(1.2) brightness(1.05); }
+.dash-avatar-frame.mood-blazing  { filter: saturate(1.4) brightness(1.1); box-shadow: 0 0 14px rgba(234,179,8,.35); }
+.dash-avatar-frame.mood-legendary{ filter: saturate(1.5) brightness(1.15); box-shadow: 0 0 20px rgba(245,158,11,.5); animation: goldFrame 2s ease-in-out infinite; }
+@keyframes goldFrame {
+  0%,100% { box-shadow: 0 0 14px rgba(245,158,11,.4); }
+  50%     { box-shadow: 0 0 28px rgba(245,158,11,.7); }
+}
+
+/* ── Boss Battle Card ── */
+.boss-card {
+  background: linear-gradient(135deg, #1a0a0a 0%, #1f0f0a 50%, #0f0a1a 100%);
+  border: 1px solid rgba(239,68,68,.4);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  animation: bossGlow 3s ease-in-out infinite;
+}
+@keyframes bossGlow {
+  0%,100% { border-color: rgba(239,68,68,.4); box-shadow: 0 0 20px rgba(239,68,68,.1); }
+  50%     { border-color: rgba(239,68,68,.7); box-shadow: 0 0 35px rgba(239,68,68,.2); }
+}
+.boss-card-inner { padding: 20px 22px; }
+.boss-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 12px;
+}
+.boss-icon {
+  width: 32px; height: 32px;
+  background: rgba(239,68,68,.15);
+  border: 1px solid rgba(239,68,68,.3);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #f87171; flex-shrink: 0;
+}
+.boss-label {
+  font-family: var(--ff-head);
+  font-size: .7rem; font-weight: 900;
+  letter-spacing: 2px; color: #f87171;
+  text-transform: uppercase;
+}
+.boss-deadline {
+  margin-left: auto;
+  font-size: .68rem; color: #6b7280;
+  font-family: var(--ff-head); letter-spacing: .5px;
+}
+.boss-title {
+  font-family: var(--ff-head);
+  font-size: 1.05rem; font-weight: 800;
+  color: #fff; margin-bottom: 8px;
+  line-height: 1.25;
+}
+.boss-desc {
+  font-size: .8rem; line-height: 1.55;
+  color: #9ca3af; margin: 0 0 14px;
+}
+.boss-progress-wrap {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+}
+.boss-bar {
+  flex: 1; height: 6px;
+  background: rgba(239,68,68,.15);
+  border-radius: 3px; overflow: hidden;
+}
+.boss-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #f97316);
+  border-radius: 3px;
+  transition: width .5s ease;
+}
+.boss-count { font-family: var(--ff-head); font-size: .75rem; color: #f87171; font-weight: 700; }
+.boss-xp-badge {
+  display: inline-flex; align-items: center;
+  background: rgba(245,158,11,.12);
+  border: 1px solid rgba(245,158,11,.3);
+  color: var(--gold);
+  font-family: var(--ff-head); font-size: .65rem; font-weight: 900;
+  letter-spacing: 1.5px; padding: 4px 10px; border-radius: 20px;
+}
+
+/* ── Per-Quest Streak Badge (Feature 1) ── */
+.q-streak-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: rgba(249,115,22,.12);
+  border: 1px solid rgba(249,115,22,.3);
+  color: #fb923c;
+  font-family: var(--ff-head); font-size: .65rem; font-weight: 800;
+  padding: 2px 7px; border-radius: 20px;
+  flex-shrink: 0; margin-right: 4px;
+}
+
+/* ── Reflection Prompt Modal ── */
+.reflection-overlay {
+  position: fixed; inset: 0;
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 8000;
+  background: rgba(0,0,0,.5);
+  backdrop-filter: blur(4px);
+  padding-bottom: 32px;
+}
+.reflection-card {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 24px 24px 24px 24px;
+  padding: 28px;
+  width: min(420px, 92vw);
+  box-shadow: 0 -20px 60px rgba(0,0,0,.3), 0 0 40px rgba(var(--accent-rgb),.06);
+}
+.reflection-icon {
+  width: 44px; height: 44px;
+  background: rgba(var(--accent-rgb),.1);
+  border: 1px solid rgba(var(--accent-rgb),.2);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.reflection-title {
+  font-family: var(--ff-head); font-size: 1.1rem; font-weight: 800;
+  color: var(--text); margin: 0 0 4px;
+}
+.reflection-quest {
+  font-family: var(--ff-head); font-size: .75rem; font-weight: 700;
+  color: var(--accent); letter-spacing: .5px; margin: 0 0 14px;
+}
+.reflection-prompt {
+  font-size: .85rem; color: var(--text-dim);
+  line-height: 1.5; margin: 0 0 14px;
+}
+.reflection-input {
+  width: 100%; resize: none;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  color: var(--text); font-family: var(--ff-body);
+  font-size: .9rem; padding: 12px 14px;
+  transition: border-color .2s;
+  margin-bottom: 16px;
+}
+.reflection-input:focus { outline: none; border-color: var(--accent); }
+.reflection-input::placeholder { color: var(--muted); }
+.reflection-actions { display: flex; gap: 10px; }
+.reflect-skip {
+  flex: 1; padding: 10px;
+  border: 1px solid var(--border2); background: transparent;
+  color: var(--muted); border-radius: 10px; cursor: pointer;
+  font-size: .82rem; font-weight: 600; transition: all .2s;
+}
+.reflect-skip:hover { color: var(--text); }
+.reflect-save {
+  flex: 2; padding: 10px 18px;
+  background: var(--accent); color: #000; border: none;
+  border-radius: 10px; font-family: var(--ff-head);
+  font-size: .88rem; font-weight: 800; cursor: pointer;
+  transition: all .2s; box-shadow: 0 4px 14px rgba(var(--accent-rgb),.3);
+}
+.reflect-save:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(var(--accent-rgb),.45); }
+.reflect-save:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Light theme overrides for new elements */
+:global(.theme-light) .boss-card { background: linear-gradient(135deg, #fff5f5, #fff); }
+:global(.theme-light) .reflection-card { background: #fff; border-color: rgba(0,0,0,.1); }
+:global(.theme-light) .reflect-save { color: #fff; }
+
+/* Reflection transition */
+.reflect-pop-enter-active { transition: all .35s cubic-bezier(.34,1.56,.64,1); }
+.reflect-pop-leave-active { transition: all .25s ease; }
+.reflect-pop-enter-from  { opacity: 0; transform: translateY(40px); }
+.reflect-pop-leave-to    { opacity: 0; transform: translateY(20px); }
+</style>
