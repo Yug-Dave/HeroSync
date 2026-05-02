@@ -5,6 +5,8 @@ import de.fhdo.HeroSync.entity.User;
 import de.fhdo.HeroSync.repository.UserRepository;
 import de.fhdo.HeroSync.service.AiChatService;
 import de.fhdo.HeroSync.service.QuestClassifierService;
+import de.fhdo.HeroSync.dto.AiChatRequest;
+import de.fhdo.HeroSync.dto.AiChatResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
